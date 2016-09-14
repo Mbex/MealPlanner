@@ -1,4 +1,7 @@
-class Meal_Plan():
+from MealPlanner.databaseCRUDService import mongoCRUD
+import random.random as rnd
+
+class Meal_Plan(mongoCRUD):
 
     """Get n random meals from a database and
     display them in a shopping list format
@@ -6,42 +9,67 @@ class Meal_Plan():
 
 
     def __init__ (self, database_name):
-        Database_Mixin.__init__(self, database_name)
+        mongoCRUD.__init__(self, database_name)
 
         self.meals = []
-        self.meal_names = []
         self.shopping_list = {}
 
 
-    def add_meal(self, meal):
+    def search(self, keyword):
 
-        """Adds meal to meal database.
-        Pass dictionary for json dump to work.
+        """search through database"""
+
+        results = []
+        allEntires = self.readAll()
+        for entry in allEntries:
+            if keyword in entry:
+                results.append(entry)
+
+        return results
+
+
+    def addMeal(self, query_object):
+
+        """Add meal from database to mealPlan object."""
+
+        meal_object = readByField(query_object)
+        self.meals.append(meal_object)
+
+
+    def removeMeal(self, meal_object):
+
+        """Remove meal from mealPlan object."""
+
+        self.meals.pop(meal_object)
+
+
+
+    def random_meals(self, n):
+
+        """Get n random n selections of meals
+        from database containing .json files.
         """
 
-        self.write_entry(meal.name, meal.data)
+        allEntries = self.readAll()
+        randList = random.sample(range(1, len(allEntries)), n)
+
+        meals = [allEntries[i] for i in randList]
+
+        return meals
+
+
 
 
     def _parse_stringd_amount(self, string):
 
-        """returns list of int of amount and unit of amount"""
+        """Returns list of int of amount and unit of amount."""
 
         split = string.split()
         return [int(split[0]), split[1]]
 
-    def plan_meals(self, n):
-
-        """Get n random n selections of meals
-        from database containing .json files
-        """
-
-        meals = self.choose_entries(n)
-        self.meals = meals
-        for meal in meals: self.meal_names.append(meal['name'])
-        return meals
 
 
-    def make_shopping_list(self):
+    def shopping_list(self):
 
         """Return dictionary of meals with ingredients as keys"""
 
