@@ -93,7 +93,7 @@ class mongoCRUD():
 
         return self.collection.update_one(
                  query_object, {'$set' : update_object}
-                 )
+               )
 
 
     def updateManyFields(self, query_object, update_object):
@@ -104,7 +104,7 @@ class mongoCRUD():
 
         return self.collection.update_one(
                  query_object, {'$set' : update_object}
-                 )
+               )
 
 
     def deleteByField(self, query_object):
