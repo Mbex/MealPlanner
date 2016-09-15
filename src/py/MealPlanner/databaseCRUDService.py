@@ -62,7 +62,6 @@ class mongoCRUD():
 
             results.append(document)
 
-        print results
         return results
 
 
@@ -79,10 +78,10 @@ class mongoCRUD():
             for key in document:
                 document[key] = str(document[key])
                 document[str(key)] = document.pop(key)
+
             results.append(document)
 
-        print results
-        return json.dumps(results)
+        return results
 
 
     def updateOneField(self, query_object, update_object):

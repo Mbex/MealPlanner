@@ -1,7 +1,7 @@
 from MealPlanner.databaseCRUDService import mongoCRUD
-import random.random as rnd
+import random
 
-class Meal_Plan(mongoCRUD):
+class MealPlan(mongoCRUD):
 
     """Get n random meals from a database and
     display them in a shopping list format
@@ -20,9 +20,9 @@ class Meal_Plan(mongoCRUD):
         """search through database"""
 
         results = []
-        allEntires = self.readAll()
+        allEntries = self.readAll()
         for entry in allEntries:
-            if keyword in entry:
+            if keyword in str(entry):
                 results.append(entry)
 
         return results
@@ -32,35 +32,34 @@ class Meal_Plan(mongoCRUD):
 
         """Add meal from database to mealPlan object."""
 
-        meal_object = readByField(query_object)
-        self.meals.append(meal_object)
+        meal_object = self.readByField(query_object)
+        self.meals.append(meal_object[0])
 
 
-    def removeMeal(self, meal_object):
+    def removeMeal(self, query_object):
 
         """Remove meal from mealPlan object."""
 
-        self.meals.pop(meal_object)
+        for i, entry in enumerate(self.meals):
+            if query_object[query_object.keys()[0]] in str(entry):
+                self.meals.pop(i)
 
 
-
-    def random_meals(self, n):
+    def randomMeals(self, n):
 
         """Get n random n selections of meals
         from database containing .json files.
         """
 
         allEntries = self.readAll()
-        randList = random.sample(range(1, len(allEntries)), n)
+        randList = random.sample(range(0, len(allEntries)), n)
 
         meals = [allEntries[i] for i in randList]
 
         return meals
 
 
-
-
-    def _parse_stringd_amount(self, string):
+    def _parseStringAmount(self, string):
 
         """Returns list of int of amount and unit of amount."""
 
@@ -69,24 +68,22 @@ class Meal_Plan(mongoCRUD):
 
 
 
-    def shopping_list(self):
+    def shoppingList(self):
 
         """Return dictionary of meals with ingredients as keys"""
 
         shopping_list = {}
-
-        meal_names = []
         for meal in self.meals:
 
-            meal_names.append(meal['name'])
-
+            print meal
             for ingredient in meal['ingredients']:
 
+                print ingredient
                 if type(meal['ingredients'][ingredient]) is int:
                     amount = meal['ingredients'][ingredient]
                     unit = "each"
                 else:
-                    value = self._parse_stringd_amount(meal['ingredients'][ingredient])
+                    value = self._parseStringAmount(meal['ingredients'][ingredient])
                     amount = value[0]
                     unit   = value[1]
 
@@ -97,10 +94,3 @@ class Meal_Plan(mongoCRUD):
 
 
         self.shopping_list = shopping_list
-        print "\n"
-        print "***************"
-        print " Shopping List"
-        print "***************"
-        print  meal_names
-        print "\n"
-        return shopping_list
