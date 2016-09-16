@@ -4,9 +4,9 @@ import os
 from pymongo import MongoClient
 from datetime import datetime
 from bson.objectid import ObjectId
+from MealPlanner.unicodeConvertor import convert
 
-
-class mongoCRUD():
+class mongoCRUD(object):
 
     """Interact with mongo database """
 
@@ -55,12 +55,17 @@ class mongoCRUD():
 
         results = []
         cursor = self.collection.find()
-        for document in cursor:
-            for key in document:
-                document[key] = str(document[key])
-                document[str(key)] = document.pop(key)
+        # for document in cursor:
+        #     for key in document:
+        #         try:
+        #             document[key] = json.dumps(document[key])
+        #         except TypeError:
+        #             document[key] = str(document[key])
+        #         document[str(key)] = document.pop(key)
+        #
+        #     results.append(document)
 
-            results.append(document)
+        [results.append(convert(document)) for document in cursor]
 
         return results
 
@@ -74,12 +79,12 @@ class mongoCRUD():
         results = []
         query_object = self.idToObjectId(query_object)
         cursor = self.collection.find(query_object)
-        for document in cursor:
-            for key in document:
-                document[key] = str(document[key])
-                document[str(key)] = document.pop(key)
-
-            results.append(document)
+        # for document in cursor:
+        #     document = convert(document)
+        #
+        #
+        #     results.append(document)
+        [results.append(convert(document)) for document in cursor]
 
         return results
 
