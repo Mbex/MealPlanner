@@ -2,12 +2,12 @@ class Meal(object):
 
     """Meal objects contain all information on different meals"""
 
-    def __init__(self, name, typ, **kwargs):
+    def __init__(self, name, meal_type, **kwargs):
         self.name = name
-        if typ not in ["breakfast", "lunch", "dinner", "snack"]:
+        if meal_type not in ["breakfast", "lunch", "dinner", "snack"]:
             raise ValueError("Not a valid meal type")
         else:
-            self.typ = typ
+            self.meal_type = meal_type
             self.ingredients = kwargs
 
     def __str__(self):

@@ -15,34 +15,23 @@ class MealPlan(mongoCRUD):
         self.shopping_list = {}
 
 
-    def search(self, keyword):
-
-        """search through database"""
-
-        results = []
-        allEntries = self.readAll()
-        for entry in allEntries:
-            if keyword in str(entry):
-                results.append(entry)
-
-        return results
-
-
-    def addMeal(self, query_object):
+    def addMeal(self, meal_object):
 
         """Add meal from database to mealPlan object."""
 
-        meal_object = self.readByField(query_object)
+        #meal_object = self.readByField(query_object)
         self.meals.append(meal_object[0])
 
 
-    def removeMeal(self, query_object):
+    def removeMeal(self, meal_object):
 
         """Remove meal from mealPlan object."""
 
-        for i, entry in enumerate(self.meals):
-            if query_object[query_object.keys()[0]] in str(entry):
-                self.meals.pop(i)
+        # for i, entry in enumerate(self.meals):
+        #     if query_object[query_object.keys()[0]] in str(entry):
+        #         self.meals.pop(i)
+
+        self.meals.append(meal_object[0])
 
 
     def randomMeals(self, n):
