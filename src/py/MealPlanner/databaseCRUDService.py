@@ -4,9 +4,9 @@ import os
 from pymongo import MongoClient
 from datetime import datetime
 from bson.objectid import ObjectId
+from MealPlanner.unicodeConvertor import convert
 
-
-class mongoCRUD():
+class mongoCRUD(object):
 
     """Interact with mongo database """
 
@@ -25,17 +25,41 @@ class mongoCRUD():
     def __repr__(self):
         pass
 
-    def idToObjectId(self, query_object):
+    def _strIdToObjectId(self, obj):
 
-        """Modifies query object if key is '_id'
+        """Modifies object if key is '_id'
         so value is an objectId.
         """
 
-        key = query_object.keys()[0]
+        key = obj.keys()[0]
         if key == "_id":
-            query_object[key] =  ObjectId(query_object[key])
+            obj[key] =  ObjectId(obj[key])
 
-        return query_object
+        return obj
+
+    def _objectIdtoStrId(self, obj):
+
+        """Modifies query object if key is '_id'
+        so value is a string.
+        """
+
+        for key in obj.keys():
+            if key == "_id":
+                obj[key] =  str(obj[key])
+
+        return obj
+
+    def search(self, keyword):
+
+        """Search through database."""
+
+        results = []
+        allEntries = self.readAll()
+        for entry in allEntries:
+            if keyword in str(entry):
+                results.append(entry)
+
+        return results
 
 
     def create(self, meal_object):
@@ -56,14 +80,9 @@ class mongoCRUD():
         results = []
         cursor = self.collection.find()
         for document in cursor:
-            for key in document:
-                document[key] = str(document[key])
-                document[str(key)] = document.pop(key)
-
-            results.append(document)
+            results.append(self._objectIdtoStrId(convert(document)))
 
         return results
-
 
     def readByField(self, query_object):
 
@@ -72,23 +91,18 @@ class mongoCRUD():
         """
 
         results = []
-        query_object = self.idToObjectId(query_object)
+        query_object = self._strIdToObjectId(query_object)
         cursor = self.collection.find(query_object)
-        for document in cursor:
-            for key in document:
-                document[key] = str(document[key])
-                document[str(key)] = document.pop(key)
-
-            results.append(document)
+        [results.append(self._objectIdtoStrId(convert(document))) for document in cursor]
 
         return results
 
 
     def updateOneField(self, query_object, update_object):
 
-        """Update single object in database."""
+        """Update field in single entry in database."""
 
-        query_object = self.idToObjectId(query_object)
+        query_object = self._strIdToObjectId(query_object)
 
         return self.collection.update_one(
                  query_object, {'$set' : update_object}
@@ -97,9 +111,9 @@ class mongoCRUD():
 
     def updateManyFields(self, query_object, update_object):
 
-        """Update many entries in database."""
+        """Update many fields in single entry in database."""
 
-        query_object = self.idToObjectId(query_object)
+        query_object = self._strIdToObjectId(query_object)
 
         return self.collection.update_one(
                  query_object, {'$set' : update_object}
@@ -110,6 +124,6 @@ class mongoCRUD():
 
         """Delete meal_object in database."""
 
-        query_object = self.idToObjectId(query_object)
+        query_object = self._strIdToObjectId(query_object)
 
         return self.collection.remove(query_object)

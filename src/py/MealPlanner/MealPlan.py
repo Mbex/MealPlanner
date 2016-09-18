@@ -15,34 +15,23 @@ class MealPlan(mongoCRUD):
         self.shopping_list = {}
 
 
-    def search(self, keyword):
-
-        """search through database"""
-
-        results = []
-        allEntries = self.readAll()
-        for entry in allEntries:
-            if keyword in str(entry):
-                results.append(entry)
-
-        return results
-
-
-    def addMeal(self, query_object):
+    def addMeal(self, meal_object):
 
         """Add meal from database to mealPlan object."""
 
-        meal_object = self.readByField(query_object)
+        #meal_object = self.readByField(query_object)
         self.meals.append(meal_object[0])
 
 
-    def removeMeal(self, query_object):
+    def removeMeal(self, meal_object):
 
         """Remove meal from mealPlan object."""
 
-        for i, entry in enumerate(self.meals):
-            if query_object[query_object.keys()[0]] in str(entry):
-                self.meals.pop(i)
+        # for i, entry in enumerate(self.meals):
+        #     if query_object[query_object.keys()[0]] in str(entry):
+        #         self.meals.pop(i)
+
+        self.meals.append(meal_object[0])
 
 
     def randomMeals(self, n):
@@ -59,38 +48,44 @@ class MealPlan(mongoCRUD):
         return meals
 
 
-    def _parseStringAmount(self, string):
-
-        """Returns list of int of amount and unit of amount."""
-
-        split = string.split()
-        return [int(split[0]), split[1]]
-
-
-
-    def shoppingList(self):
-
-        """Return dictionary of meals with ingredients as keys"""
-
-        shopping_list = {}
-        for meal in self.meals:
-
-            print meal
-            for ingredient in meal['ingredients']:
-
-                print ingredient
-                if type(meal['ingredients'][ingredient]) is int:
-                    amount = meal['ingredients'][ingredient]
-                    unit = "each"
-                else:
-                    value = self._parseStringAmount(meal['ingredients'][ingredient])
-                    amount = value[0]
-                    unit   = value[1]
-
-                if ingredient not in shopping_list:
-                    shopping_list.setdefault(ingredient,[amount, unit])
-                else:
-                    shopping_list[ingredient][0] += amount
-
-
-        self.shopping_list = shopping_list
+    # def _parseStringAmount(self, string):
+    #
+    #     """Returns list of int of amount and unit of amount."""
+    #
+    #     split = string.split()
+    #     return [int(split[0]), split[1]]
+    #
+    #
+    #
+    # def shoppingList(self):
+    #
+    #     """Return dictionary of meals with ingredients as keys"""
+    #
+    #     shopping_list = {}
+    #     for meal in self.meals:
+    #        print meal['name'], meal['ingredients']
+    #       # print type(meal['ingredients'])
+    #       # for ingredient in meal['ingredients']:
+    #         #   print ingredient, meal['ingredients'][ingredient]
+    #          #  print type(ingredient), type(meal['ingredients'][ingredient])
+    #
+    #             #priznt json.loads(ingredient)
+    #
+    #
+    #     #         if type(meal['ingredients'][ingredient]) is int:
+    #     #             amount = meal['ingredients'][ingredient]
+    #     #             unit = "each"
+    #     #         else:
+    #     #             value = self._parseStringAmount(meal['ingredients'][ingredient])
+    #     #             amount = value[0]
+    #     #             unit   = value[1]
+    #     #
+    #     #         if ingredient not in shopping_list:
+    #     #             shopping_list.setdefault(ingredient,[amount, unit])
+    #     #         else:
+    #     #             shopping_list[ingredient][0] += amount
+    #     #
+    #     #
+    #     # self.shopping_list = shopping_list
+    #     #
+    #     #
