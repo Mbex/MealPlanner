@@ -14,34 +14,48 @@ app = flask.Flask(__name__)
 CORS(app)
 instance = MealPlan('MealPlan')
 
-@app.route('/', methods = ['GET'])
+@app.route('/', methods = ['GET','POST'])
 def hello():
 	
-   '''Welcome Message'''
+   '''Choose if you want to meal plan or edit database'''
 
-   return flask.jsonify(["welcome! go to /meals!"])
+
+   if flask.request.method == "GET":
+
+       return flask.jsonify(["welcome! go to /meals!"])
+
+   elif flask.request.method == "POST":
+
+      return flask.jsonify(["POSTED"])
 
 
 #------------- databaseCRUDService Methods -------------#
 
-@app.route('/meals', methods = ['GET', 'POST'])
-def readAllEntries():
+@app.route('/meals', methods = ['GET', 'POST', 'DELETE'])
+def AllEntries():
 
     '''All entries in database.'''
 
     if flask.request.method == "GET":
         "List entries."
+
         return flask.jsonify({'all entries': instance.readAll()})
 
     elif flask.request.method == 'POST':
         "Create new entry."
-        name = 'pie'
-        meal_type = ' dinner'
-        kwargs = {'pastry': '200g'}
 
-        meal_object = Meal(name, meal_type, kwargs)
-        instance.create(meal_object)
-        return flask.jsonify({'created':meal_object})
+        name = 'pie'
+        meal_type = 'dinner'
+        ingredients = {'pastry' : '200g'}
+
+        meal_object = Meal(name, meal_type, **ingredients)
+     
+	instance.create(meal_object)
+	return flask.jsonify({'created':'new entry'})
+
+    elif flask.request.method == 'DELETE':
+	"Delete all entries."
+        return flask.jsonify({'deleted':instance.deleteAll()})
 
     else:
         return {'error':'oops'}
@@ -121,4 +135,4 @@ def fiveRandomMeals():
 
 # Run
 if __name__ == '__main__':
-    app.run(host = ipaddr)
+    app.run(host = ipaddr, port = 5000)
