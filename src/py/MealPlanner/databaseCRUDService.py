@@ -119,6 +119,12 @@ class mongoCRUD(object):
                  query_object, {'$set' : update_object}
                )
 
+    def deleteAll(self):
+
+	"""Remove all entries in Database."""
+
+	return self.collection.remove({})
+
 
     def deleteByField(self, query_object):
 
