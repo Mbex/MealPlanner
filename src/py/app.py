@@ -13,63 +13,61 @@ ipaddr = ([l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname(
 app = flask.Flask(__name__)
 CORS(app)
 instance = MealPlan('MealPlan')
+HTML_DIR = '/home/pi/Documents/MealPlanner/src/html/'
 
-@app.route('/', methods = ['GET','POST'])
-def hello():
+
+#------------ Views ------------------------------------#
+@app.route('/', methods = ['GET'])
+def home():
 	
-   '''Choose if you want to meal plan or edit database'''
+    '''Choose if you want to meal plan or edit database.'''
+
+    return flask.send_from_directory(HTML_DIR,'index.html')
 
 
-   if flask.request.method == "GET":
+@app.route('/database.html', methods = ['GET', 'POST', 'PUT', 'DELETE'])
+def database_page():
 
-       return flask.jsonify(["welcome! go to /meals!"])
+    '''interact with database.'''
 
-   elif flask.request.method == "POST":
-
-      return flask.jsonify(["POSTED"])
+    return flask.send_from_directory(HTML_DIR,'database.html')
 
 
 #------------- databaseCRUDService Methods -------------#
-
-@app.route('/meals', methods = ['GET', 'POST', 'DELETE'])
+@app.route('/meals/', methods = ['GET', 'POST', 'DELETE'])
 def AllEntries():
 
     '''All entries in database.'''
 
     if flask.request.method == "GET":
-        "List entries."
-
-        return flask.jsonify({'all entries': instance.readAll()})
+        "List entries based on keyword passed."
+        keyword = flask.request.values.get("keyword")
+        return flask.jsonify({'keyword:'+keyword:instance.search((keyword))})
 
     elif flask.request.method == 'POST':
         "Create new entry."
+        name = flask.request.form['name']
+        meal_type = flask.request.form['meal type']
+	ingredients = flask.request.values.getlist("ingredient")
+	amounts = flask.request.values.getlist("amount")
+        meal_ingredients = {}
+	for i, ingredient  in enumerate(ingredients):
+		meal_ingredients[str(ingredient)] = str(amounts[i])
+        meal_object = Meal(name, meal_type, **meal_ingredients)
+        if flask.request.form['method']:
+           meal_object.Method(flask.request.form['method'])
+        instance.create(meal_object)
+        return flask.redirect("/database.html")
 
-        name = 'pie'
-        meal_type = 'dinner'
-        ingredients = {'pastry' : '200g'}
-
-        meal_object = Meal(name, meal_type, **ingredients)
-     
-	instance.create(meal_object)
-	return flask.jsonify({'created':'new entry'})
-
-    elif flask.request.method == 'DELETE':
-	"Delete all entries."
-        return flask.jsonify({'deleted':instance.deleteAll()})
+   # elif flask.request.method == 'DELETE':
+   #    "Delete all entries."
+   #     return flask.jsonify({'deleted':instance.deleteAll()})
 
     else:
         return {'error':'oops'}
 
 
-@app.route('/meals/<keyword>', methods = ['GET'])
-def searchDatabase(keyword):
-
-    '''Search database by keyword.'''
-
-    return flask.jsonify({'keyword:'+keyword:instance.search((keyword))})
-
-
-@app.route('/meals/<key>/<value>', methods = ['GET','PUT','DELETE'])
+@app.route('/meals/keyword=<key>/<value>', methods = ['GET','PUT','DELETE'])
 def readOneEntries(key, value):
 
     '''Entries that match kv pair in database.'''

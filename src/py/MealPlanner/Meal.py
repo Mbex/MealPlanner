@@ -1,3 +1,5 @@
+from MealPlanner.unicodeConvertor import convert
+
 class Meal(object):
 
     """Meal objects contain all information on different meals"""
@@ -11,11 +13,11 @@ class Meal(object):
             self.ingredients = kwargs
 
     def __str__(self):
-        return "meal object"
+	return str(convert(vars(self)))
 
     def __repr__(self):
-        pass
+        return str(convert(vars(self)))
 
 
-    def Method(method):
+    def Method(self, method):
         self.method = method
