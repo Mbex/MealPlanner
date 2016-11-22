@@ -6,33 +6,30 @@ from MealPlanner.Meal import Meal
 import socket
 
 
-import socket
-ipaddr = ([l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) if l][0][0])
+# --------for on the pi------------
+# also app.run at the bottom
+#----------------------------------
+#ipaddr = ([l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) if l][0][0])
 
 
 app = flask.Flask(__name__)
 CORS(app)
 instance = MealPlan('MealPlan')
-HTML_DIR = '/home/pi/Documents/MealPlanner/src/html/'
-
 
 #------------ Views ------------------------------------#
-@app.route('/', methods = ['GET'])
-def home():
-	
-    '''Choose if you want to meal plan or edit database.'''
-
-    return flask.send_from_directory(HTML_DIR,'index.html')
-
-
-@app.route('/database.html', methods = ['GET', 'POST', 'PUT', 'DELETE'])
-def database_page():
-
-    '''interact with database.'''
-
-    return flask.send_from_directory(HTML_DIR,'database.html')
-
-
+# @app.route('/', methods = ['GET'])
+# def home():
+#
+#     '''Choose if you want to meal plan or edit database.'''
+#
+#     return flask.send_from_directory(HTML_DIR,'index.html')
+#
+# @app.route('/database.html', methods = ['GET', 'POST', 'PUT', 'DELETE'])
+# def database_page():
+#
+#     '''interact with database.'''
+#
+#     return flask.send_from_directory(HTML_DIR,'database.html')
 #------------- databaseCRUDService Methods -------------#
 @app.route('/meals/', methods = ['GET', 'POST', 'DELETE'])
 def AllEntries():
@@ -40,40 +37,50 @@ def AllEntries():
     '''All entries in database.'''
 
     if flask.request.method == "GET":
-        "List entries based on keyword passed."
-        keyword = flask.request.values.get("keyword")
-        return flask.jsonify({'keyword:'+keyword:instance.search((keyword))})
 
-    elif flask.request.method == 'POST':
-        "Create new entry."
+        #List entries based on keyword passed.
+        return flask.jsonify(instance.readAll())
+
+    if flask.request.method == 'POST':
+
+        #Create new entry.
         name = flask.request.form['name']
         meal_type = flask.request.form['meal type']
-	ingredients = flask.request.values.getlist("ingredient")
-	amounts = flask.request.values.getlist("amount")
+        ingredients = flask.request.form['ingredient'].split(" ")
+
+		# parse string correctly
         meal_ingredients = {}
-	for i, ingredient  in enumerate(ingredients):
-		meal_ingredients[str(ingredient)] = str(amounts[i])
+        for i, word in enumerate(ingredients):
+			ingredient_key = ""
+			if word.isalpha():
+				ingredient_key = ingredient_key + word
+			else:
+				ingredient_value = word
+				meal_ingredients[str(ingredient_key)] = str(ingredient_value)
+
         meal_object = Meal(name, meal_type, **meal_ingredients)
+
         if flask.request.form['method']:
            meal_object.Method(flask.request.form['method'])
         instance.create(meal_object)
         return flask.redirect("/database.html")
 
-   # elif flask.request.method == 'DELETE':
-   #    "Delete all entries."
-   #     return flask.jsonify({'deleted':instance.deleteAll()})
+    elif flask.request.method == 'DELETE':
+        "Delete all entries."
+        return flask.jsonify({'deleted':instance.deleteAll()})
 
     else:
         return {'error':'oops'}
 
 
-@app.route('/meals/keyword=<key>/<value>', methods = ['GET','PUT','DELETE'])
+@app.route('/meals/keyword=<key>/value=<value>', methods = ['GET','PUT','DELETE'])
 def readOneEntries(key, value):
 
     '''Entries that match kv pair in database.'''
 
     if flask.request.method == 'GET':
         "List entries."
+
         return flask.jsonify({key+':'+value:instance.readByField({key:value})})
 
     elif flask.request.method == 'PUT':
@@ -92,37 +99,41 @@ def readOneEntries(key, value):
 
 #------------- MealPlan Methods -------------#
 
-@app.route('/meals/_id/<_id>/add', methods = ['GET'])
+@app.route('/meals/_id/<_id>/', methods = ['POST','DELETE'])
 def addMealToMealList(_id):
 
-    '''Add a meal_object to instance.meals'''
+    '''Add a meal_object to instance.meals.'''
 
-    meal_object = instance.readByField({'_id':_id})
-    instance.addMeal(meal_object)
-    return flask.jsonify({'meal added:': meal_object})
+    if flask.request.method == "POST":
 
+        meal_object = instance.readByField({'_id':_id})
+        instance.addMeal(meal_object)
+        return flask.jsonify({'meal added:': meal_object})
 
-@app.route('/meals/_id/<_id>/remove', methods = ['GET'])
-def removeMealFromMealList(_id):
+    elif flask.request.method == "DELETE":
 
-    '''Add a meal_object to instance.meals'''
+        '''Remove a meal_object from instance.meals.'''
 
-    meal_object = instance.readByField({'_id':_id})
-    instance.removeMeal(meal_object)
-    return flask.jsonify({'meal removed:': meal_object})
+        meal_object = instance.readByField({'_id':_id})
+        instance.removeMeal(meal_object)
+        return flask.jsonify({'meal removed:': meal_object})
+
+    else:
+        return {'error':'oops'}
+
 
 
 @app.route('/meals/random/<n>', methods = ['GET'])
 def nRandomMeals(n):
 
-    '''n random meals from database.'''
+    '''N random meals from database.'''
     return flask.jsonify({str(n)+' random meal(s):': instance.randomMeals(int(n))})
 
 
 @app.route('/meals/random', methods = ['GET'])
 def fiveRandomMeals():
 
-    '''default 5 random meals from database.'''
+    '''Default 5 random meals from database.'''
     return flask.jsonify({'5 random meals:': instance.randomMeals(5)})
 
 
@@ -133,4 +144,5 @@ def fiveRandomMeals():
 
 # Run
 if __name__ == '__main__':
-    app.run(host = ipaddr, port = 5000)
+    app.run()
+  #  app.run(host = ipaddr, port = 5000)

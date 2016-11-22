@@ -7,75 +7,51 @@
     <title>Meal Planner</title>
 </head>
 <body>
-    <div>
-    <h1>Meal Database</h1>
-    </div>
-
-    <div>
-        <fieldset>
-            <h2> Find </h2>
-            <form action="/meals/" method="get">
-                <input type="text" name="keyword" value=""/>
-                <input type="submit" value="Search"/>
-            </form>
-            <div>
-            <p> found meals go here </p>  
-            </div>
-        </fieldset> 
-    </div>
- 
+<h1>Meal Database</h1>
 
 
+<fieldset>
+<p> all meals go here </p>
+</fieldset>
 
 
+<h2> Find </h2>
+<form action="/meals/" method="get">
+<input type="text" name="keyword" value=""/>
+<input type="submit" value="Search"/>
+</form>
 
+<form action="/meals/" method="post">
+<h2>  Meal </h2>
+<p>
+<label class="field" for="name">Name</label><input type="text", name="name", autofocus>
+</p>
+<p>
+<label class="field" for="meal type">Meal Type</label>
+<select name="meal type" value = "Dinner">
+<option value="dinner">Dinner</option>
+<option value="breakfast">Breakfast</option>
+<option value="lunch">Lunch</option>
+<option value="snack">Snack</option>
+</select>
+</p>
 
+<p><label class="field" for="ingredient">Ingredients</label><textarea name="ingredient",rows ="10" cols="30"></textarea></p>
+<p><label class="field" for="method">Method</label><textarea name="method" rows="10" cols="30"></textarea></p>
+<p><input type="submit" value="Submit"><input type="reset"></p>
 
-
-
-    <div>
-        <form action="/meals/" method="post">
-          <fieldset>
-           <h2>  Meal </h2>
-           <p><label class="field" for="name">Name</label><input type="text", name="name", autofocus></p>
-            <p><label class="field" for="meal type">Meal Type</label>
-               <select name="meal type" value = "Dinner">
-                   <option value="dinner">Dinner</option>
-                   <option value="breakfast">Breakfast</option>
-                   <option value="lunch">Lunch</option>
-                   <option value="snack">Snack</option>
-               </select></p>
-
-            <p><label class="field" for="ingredient">Ingredient</label><input type="text", name="ingredient", autocomplete="on">
-               <label class="field" for="amount">Amount</label><input type="text", name="amount", autocomplete="on"></p>
-            <p><label class="field" for="ingredient">Ingredient</label><input type="text", name="ingredient", autocomplete="on">
-               <label class="field" for="amount">Amount</label><input type="text", name="amount", autocomplete="on">
-            <p><label class="field" for="ingredient">Ingredient</label><input type="text", name="ingredient", autocomplete="on">
-               <label class="field" for="amount">Amount</label><input type="text", name="amount", autocomplete="on"></p>
-            <p><label class="field" for="ingredient">Ingredient</label><input type="text", name="ingredient", autocomplete="on">
-               <label class="field" for="amount">Amount</label><input type="text", name="amount", autocomplete="on">
-            <p><label class="field" for="ingredient">Ingredient</label><input type="text", name="ingredient", autocomplete="on">
-               <label class="field" for="amount">Amount</label><input type="text", name="amount", autocomplete="on"></p>
-            <p><label class="field" for="ingredient">Ingredient</label><input type="text", name="ingredient", autocomplete="on">
-               <label class="field" for="amount">Amount</label><input type="text", name="amount", autocomplete="on">
-               <input type="button", name="add", value="add"></p>
+</form>
 
 
 
 
 
 
-            <p><label class="field" for="method">Method</label><textarea name="method" rows="10" cols="30"></textarea></p>
-            <p><input type="submit" value="Submit"><input type="reset"></p>
-        </form>
-      </fieldset>
-    </div>
-    <div>
-        <nav>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="#">Meal Plan</a></li>
-            </ul>
-        </nav>
-    </div>
+<nav>
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="#">Meal Plan</a></li>
+</ul>
+</nav>
+
 </body>
