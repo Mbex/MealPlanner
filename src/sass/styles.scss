@@ -1,0 +1,53 @@
+/* reset default browser behaviour */
+body, header, nav, footer, aside, section, h1, h2, h3, h4, h5, h6, p, div, img, ul, ol, li, table, tr, td, a {
+        margin:0;
+        padding:0;
+}
+
+// global variables
+$color1: white;
+$color2: rgba(20,20,100,0.8);
+$color3: rgba(20,100,20,1);
+
+body{
+  font-family: helvetica;
+  font-stretch: expanded;
+}
+
+header{
+  position: relative;
+  text-align: center;
+  font-size: 36;
+  padding: 2%;
+}
+
+nav{
+  margin-bottom: 10px;
+}
+
+nav ul{
+  list-style-type: none;
+}
+
+nav ul li{
+  margin: 2%;
+  width: 46%;
+  float: left;
+}
+
+/********
+Id rules
+********/
+nav a.main-nav:link{
+  font-size: 30px;
+  font-weight: bold;
+  text-decoration: none;
+  text-align: center;
+  display: block;
+  color: black;
+  background-color: $color2;
+  padding: 20%;
+}
+nav a.main-nav:hover{
+  background-color: $color3;
+}
