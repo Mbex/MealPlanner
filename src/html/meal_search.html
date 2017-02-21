@@ -10,15 +10,21 @@
 <body>
 
 <div class="wrapper">
+<div id='find-meal'>
+  <h2> Find </h2>
+  <form action="/meals/" method="get">
+  <input type="text" name="keyword" value=""/>
+  <input type="submit" value="Search"/>
+  </form>
+  <fieldset id="db-meal-list">
+  <p>****</p>
+  </fieldset>
+</div>
 
 
-<h1>Meal Database</h1>
-<nav>
-<ul>
-<li><a class="main-nav" href="/meal_entry_form.html">Add New</a></li>
-<li><a class="main-nav" href="/meal_search.html">Browse</a></li>
-</ul>
-</nav>
+
+<div class="clearer"></div>
+
 <footer>
 <ul>
 <li><a href="/">Home</a></li>

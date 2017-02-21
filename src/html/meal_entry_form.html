@@ -1,0 +1,45 @@
+<head>
+    <!DOCTYPE html>
+    <html lang="en">
+    <meta charset="UTF-8">
+    <meta name="MealPlanner">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <title>Meal Planner</title>
+    <script src="js/app.min.js"></script>
+</head>
+<body>
+
+<div class="wrapper">
+
+
+<h1>Meal Database</h1>
+
+<form action="http://127.0.0.1:5000/meals/" method="post" id='add-meal-form'>
+<h2>  Meal </h2>
+<label class="field" for="name">Name</label><input type="text", name="name", autofocus>
+
+<label class="field" for="meal type">Meal Type</label>
+<select name="meal type" value = "Dinner">
+<option value="dinner">Dinner</option>
+<option value="breakfast">Breakfast</option>
+<option value="lunch">Lunch</option>
+<option value="snack">Snack</option>
+</select>
+
+
+<p><label class="field" for="ingredient">Ingredients</label><textarea name="ingredient",rows ="10" cols="30"></textarea></p>
+<p><label class="field" for="method">Method</label><textarea name="method" rows="10" cols="30"></textarea></p>
+<p><input type="submit" value="Submit"><input type="reset"></p>
+
+</form>
+
+<footer>
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="#">Meal Plan</a></li>
+</ul>
+</footer>
+
+</div>
+
+</body>
