@@ -34,6 +34,13 @@ class MealPlan(mongoCRUD):
         self.meals.append(meal_object[0])
 
 
+    def saveMeals(self):
+
+        """Save ids of meals as entry in database."""
+
+        
+
+
     def randomMeals(self, n):
 
         """Get n random n selections of meals
