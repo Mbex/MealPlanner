@@ -87,6 +87,7 @@ def OneEntry(key, value):
 
     if flask.request.method == 'GET':
         "List entries."
+
         return flask.jsonify({key+':'+value:meal_db.readByField({key:value})})
 
     elif flask.request.method == 'PUT':
@@ -98,8 +99,10 @@ def OneEntry(key, value):
         return flask.jsonify({key+':'+value:meal_db.readByField({key:value},{update_object})})
 
     elif flask.request.method == 'DELETE':
-        "Delete entries."
-        return flask.jsonify({key+':'+value:meal_db.deleteByField({key:value})})
+        "Delete entry."
+        print {key+':'+value:meal_db.readByField({key:value})}
+        flask.jsonify({key+':'+value:meal_db.deleteByField({key:value})})
+        return flask.redirect('http://localhost:3001/database.html'), 201
 
     else:
         return {'error':'oops'}
