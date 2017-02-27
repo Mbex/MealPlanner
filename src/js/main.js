@@ -5,7 +5,7 @@ var FNAME = document.URL.substr(document.URL.lastIndexOf('/')+1);
 
 function httpGet(theUrl) {
     return new Promise( function(resolve, reject) {
-        page = new XMLHttpRequest();
+        var page = new XMLHttpRequest();
         page.addEventListener('load', function(evt){
             resolve(JSON.parse(this.responseText));
         });
@@ -25,8 +25,6 @@ function httpDelete(theUrl) {
 }
 
 
-
-
 function populateMealDBList() {
 
   // populate database list of meals with functionality
@@ -35,14 +33,14 @@ function populateMealDBList() {
     var dsp_meals = document.getElementById('db-meal-list');
     all_meals.forEach( function(meal) {
 
-      var id = meal._id;
-      var del_addr = LOCAL_HOST.concat('meals/keyword=_id/value=<value>').replace('<value>', id)
+      var del_addr = LOCAL_HOST.concat('meals/_id/<value>').replace('<value>', meal._id);
       var entry_parent = document.createElement('div');
       var entry_major = document.createElement("p");
       var entry_minor = document.createElement("p");
       var entry_del_button = document.createElement('button');
+      var edit_open = 0;
 
-      entry_parent.setAttribute('id', id);
+      entry_parent.setAttribute('id', meal._id);
       entry_major.innerHTML = meal.name;
       entry_minor.innerHTML = JSON.stringify(meal.ingredients);
       entry_del_button.innerHTML = 'Delete';
@@ -54,9 +52,22 @@ function populateMealDBList() {
       });
 
       // THIS IS THE EDIT
-      entry_parent.addEventListener('click', function(evt) {
-        //httpPut(update_object)
-      });
+      // entry_parent.addEventListener('click', function(evt) {
+      //
+      //   if (edit_open) {
+      //     var mefo = document.getElementById('mefo');
+      //     mefo.parentNode.removeChild(mefo);
+      //     edit_open = 0;
+      //   } else {
+      //     var mefo = document.createElement('object');
+      //     mefo.setAttribute('id', 'mefo');
+      //     mefo.setAttribute('type', 'text/html');
+      //     mefo.setAttribute('data', 'meal_entry_form_only.html');
+      //     entry_parent.appendChild(mefo);
+      //     edit_open = 1;
+      //   }
+      //
+      // });
 
       entry_parent.appendChild(entry_major);
       entry_parent.appendChild(entry_minor);
@@ -66,6 +77,11 @@ function populateMealDBList() {
     });
   });
 };
+
+
+
+
+
 
 
 

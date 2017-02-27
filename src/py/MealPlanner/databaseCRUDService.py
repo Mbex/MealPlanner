@@ -98,15 +98,15 @@ class mongoCRUD(object):
         return results
 
 
-    def updateOneField(self, query_object, update_object):
-
-        """Update field in single entry in database."""
-
-        query_object = self._strIdToObjectId(query_object)
-
-        return self.collection.update_one(
-                 query_object, {'$set' : update_object}
-               )
+    # def updateOneField(self, query_object, update_object):
+    #
+    #     """Update field in single entry in database."""
+    #
+    #     query_object = self._strIdToObjectId(query_object)
+    #
+    #     return self.collection.update(
+    #              query_object, {'$set' : update_object}
+    #            )
 
 
     def updateManyFields(self, query_object, update_object):
@@ -114,10 +114,11 @@ class mongoCRUD(object):
         """Update many fields in single entry in database."""
 
         query_object = self._strIdToObjectId(query_object)
-
-        return self.collection.update_one(
-                 query_object, {'$set' : update_object}
+        print query_object, update_object
+        return self.collection.update(
+                query_object , {'$set' : update_object}
                )
+
 
     def deleteAll(self):
 

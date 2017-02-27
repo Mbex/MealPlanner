@@ -5,6 +5,7 @@ import socket
 import flask
 from flask_cors import CORS
 import re
+import json
 
 
 # --------for on the pi------------
@@ -80,27 +81,29 @@ def AllEntries():
         return {'error':'oops'}
 
 
-@app.route('/meals/keyword=<key>/value=<value>', methods = ['GET','PUT','DELETE'])
+@app.route('/meals/<key>/<value>/', methods = ['GET','PUT','DELETE'])
 def OneEntry(key, value):
 
     '''Entries that match kv pair in database.'''
 
     if flask.request.method == 'GET':
         "List entries."
-
         return flask.jsonify({key+':'+value:meal_db.readByField({key:value})})
 
     elif flask.request.method == 'PUT':
         "Update entries."
-        update_object = meal_db.readByField({key:value})
+        update_dict = json.loads(flask.request.data)
+        meal_dict = meal_db.readByField({key:value})[0]
 
-        flask.request.form['name'] = update_object.name
+        meal_db.updateManyFields({'_id':meal_dict['_id']}, update_dict)
 
-        return flask.jsonify({key+':'+value:meal_db.readByField({key:value},{update_object})})
+
+        return flask.redirect('http://localhost:3001/meal_search.html'), 201
 
     elif flask.request.method == 'DELETE':
         "Delete entry."
-        print {key+':'+value:meal_db.readByField({key:value})}
+
+        print "deleted %s" % value
         flask.jsonify({key+':'+value:meal_db.deleteByField({key:value})})
         return flask.redirect('http://localhost:3001/database.html'), 201
 
@@ -142,46 +145,44 @@ def OneEntry(key, value):
 
 
 
-
-
 #------------- MealPlan Methods -------------#
 
-@app.route('/meals/_id/<_id>/', methods = ['POST','DELETE'])
-def addMealToMealList(_id):
-
-    '''Add a meal_object to mealplan_db.meals.'''
-
-    if flask.request.method == "POST":
-
-        meal_object = mealplan_db.readByField({'_id':_id})
-        mealplan_db.addMeal(meal_object)
-        return flask.jsonify({'meal added:': meal_object})
-
-    elif flask.request.method == "DELETE":
-
-        '''Remove a meal_object from mealplan_db.meals.'''
-
-        meal_object = mealplan_db.readByField({'_id':_id})
-        mealplan_db.removeMeal(meal_object)
-        return flask.jsonify({'meal removed:': meal_object})
-
-    else:
-        return {'error':'oops'}
-
-
-
-@app.route('/meals/random/<n>', methods = ['GET'])
-def nRandomMeals(n):
-
-    '''N random meals from database.'''
-    return flask.jsonify({str(n)+' random meal(s):': mealplan_db.randomMeals(int(n))})
-
-
-@app.route('/meals/random', methods = ['GET'])
-def fiveRandomMeals():
-
-    '''Default 5 random meals from database.'''
-    return flask.jsonify({'5 random meals:': mealplan_db.randomMeals(5)})
+# @app.route('/meals/_id/<_id>/', methods = ['POST','DELETE'])
+# def addMealToMealList(_id):
+#
+#     '''Add a meal_object to mealplan_db.meals.'''
+#
+#     if flask.request.method == "POST":
+#
+#         meal_object = mealplan_db.readByField({'_id':_id})
+#         mealplan_db.addMeal(meal_object)
+#         return flask.jsonify({'meal added:': meal_object})
+#
+#     elif flask.request.method == "DELETE":
+#
+#         '''Remove a meal_object from mealplan_db.meals.'''
+#
+#         meal_object = mealplan_db.readByField({'_id':_id})
+#         mealplan_db.removeMeal(meal_object)
+#         return flask.jsonify({'meal removed:': meal_object})
+#
+#     else:
+#         return {'error':'oops'}
+#
+#
+#
+# @app.route('/meals/random/<n>', methods = ['GET'])
+# def nRandomMeals(n):
+#
+#     '''N random meals from database.'''
+#     return flask.jsonify({str(n)+' random meal(s):': mealplan_db.randomMeals(int(n))})
+#
+#
+# @app.route('/meals/random', methods = ['GET'])
+# def fiveRandomMeals():
+#
+#     '''Default 5 random meals from database.'''
+#     return flask.jsonify({'5 random meals:': mealplan_db.randomMeals(5)})
 
 
 
