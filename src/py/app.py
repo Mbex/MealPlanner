@@ -3,10 +3,9 @@ from MealPlanner.Meal import Meal
 from MealPlanner.databaseCRUDService import mongoCRUD
 import socket
 import flask
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import re
 import json
-
 
 # --------for on the pi------------
 # also app.run at the bottom
@@ -14,9 +13,9 @@ import json
 #----------------------------------
 
 app = flask.Flask(__name__)
-CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+CORS(app, resources={r"/meals/*": {"origins":  "http://localhost:3000"}})
 meal_db = mongoCRUD('meals')
-
 
 #mealplan_db = MealPlan('MealPlans')
 #------------- Views ------------------------------------#
@@ -48,9 +47,10 @@ def AllEntries():
     if flask.request.method == 'POST':
 
         '''Create new entry.'''
+
         name = flask.request.form['name']
         meal_type = flask.request.form['meal type']
-        ingredients = flask.request.form['ingredient'].split("\r\n")
+        ingredients = flask.request.form['ingredients'].split("\r\n")
 
 		# parse ingredients correctly
         meal_ingredients = {}
@@ -66,11 +66,14 @@ def AllEntries():
             if ingredient_key == '': pass
             meal_ingredients[str(ingredient_key).strip()] = str(ingredient_value)
         meal_ingredients.pop('', None)
+
         meal_object = Meal(name, meal_type, **meal_ingredients)
 
-        if flask.request.form['method']: meal_object.Method(flask.request.form['method'])
+        if flask.request.form['method']:
+             meal_object.Method(flask.request.form['method'])
 
         meal_db.create(meal_object)
+
         return flask.redirect("http://localhost:3001/database.html")
 
     # elif flask.request.method == 'DELETE':
@@ -82,6 +85,7 @@ def AllEntries():
 
 
 @app.route('/meals/<key>/<value>/', methods = ['GET','PUT','DELETE'])
+@cross_origin()
 def OneEntry(key, value):
 
     '''Entries that match kv pair in database.'''
@@ -94,11 +98,9 @@ def OneEntry(key, value):
         "Update entries."
         update_dict = json.loads(flask.request.data)
         meal_dict = meal_db.readByField({key:value})[0]
-
         meal_db.updateManyFields({'_id':meal_dict['_id']}, update_dict)
-
-
         return flask.redirect('http://localhost:3001/meal_search.html'), 201
+
 
     elif flask.request.method == 'DELETE':
         "Delete entry."
@@ -106,6 +108,7 @@ def OneEntry(key, value):
         print "deleted %s" % value
         flask.jsonify({key+':'+value:meal_db.deleteByField({key:value})})
         return flask.redirect('http://localhost:3001/database.html'), 201
+
 
     else:
         return {'error':'oops'}
