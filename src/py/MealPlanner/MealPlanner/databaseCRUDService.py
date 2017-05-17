@@ -1,23 +1,22 @@
+from MealPlanner.unicodeConvertor import convert
+from datetime import datetime
+from bson.objectid import ObjectId
+from pymongo import MongoClient
 import json
 import re
 import os
-from pymongo import MongoClient
-from datetime import datetime
-from bson.objectid import ObjectId
-from MealPlanner.unicodeConvertor import convert
 
 class mongoCRUD(object):
 
     """Interact with mongo database """
 
-    def __init__(self, database_name):
+    def __init__(self, database_name, collection_name):
 
         self.client = MongoClient()
-        self.db_name = None
-        self.collection = None
+        self.collection_name = collection_name
         self.db_name = database_name
         self.database = self.client[database_name]
-        self.collection = self.database[database_name]
+        self.collection = self.database[collection_name]
 
     def __str__(self):
         pass
@@ -49,17 +48,17 @@ class mongoCRUD(object):
 
         return obj
 
-    def search(self, keyword):
-
-        """Search through database."""
-
-        results = []
-        allEntries = self.readAll()
-        for entry in allEntries:
-            if keyword in str(entry):
-                results.append(entry)
-
-        return results
+    # def search(self, keyword):
+    #
+    #     """Search through database."""
+    #
+    #     results = []
+    #     allEntries = self.readAll()
+    #     for entry in allEntries:
+    #         if keyword in str(entry):
+    #             results.append(entry)
+    #
+    #     return results
 
 
     def create(self, meal_object):
@@ -67,9 +66,12 @@ class mongoCRUD(object):
         """Put meal_object in collection in database."""
 
         content = vars(meal_object)
+        content['_id'] = ObjectId()
+        print content
         result = self.collection.insert_one(content)
 
-        print "created id: %s meal_object: %s" % (result.inserted_id, meal_object.name)
+        print ("created id: %s meal_object: %s" %
+                            (content['_id'], meal_object.name))
         return result
 
 
