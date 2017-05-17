@@ -6,8 +6,8 @@ body, header, nav, footer, aside, section, h1, h2, h3, h4, h5, h6, p, div, img, 
 
 // global variables
 $color1: white;
-$color2: rgba(20,20,100,0.8);
-$color3: rgba(20,100,20,1);
+$color2: rgba(20,40,600,0.8);
+$color3: rgba(80,0,60,1);
 
 body{
   font-family: helvetica;
@@ -31,7 +31,7 @@ nav{
   li{
     margin: 2%;
     width: 46%;
-    float: left;
+    // float: left;
   }
 
   a.main-nav:link{
@@ -77,7 +77,7 @@ ID rules
 
 #add-meal-form{
   width:45%;
-  float : left;
+  // float : left;
 
 }
 
@@ -88,5 +88,5 @@ ID rules
 
 #db-meal-list{
   width: 45%;
-  float: left;
+  // float: left;
 }

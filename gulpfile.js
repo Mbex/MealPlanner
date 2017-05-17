@@ -16,7 +16,7 @@ var jquery = require('jquery');
 var shell = require('gulp-shell')
 var app = connect()
   .use(history())
-  .listen(3000);
+  .listen(5002);
 
 
 const BUILD_DEST = "./build";
