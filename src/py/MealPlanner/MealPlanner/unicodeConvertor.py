@@ -2,6 +2,7 @@ import collections
 from bson.objectid import ObjectId
 
 
+
 def convert(data):
     if isinstance(data, basestring):
         return str(data)

@@ -17,11 +17,10 @@ import json
 #----------------------------------
 app = flask.Flask(__name__)
 cors = CORS(app)
-Meals_db = mongoCRUD('MealPlanner','Meals') # meal_db
+Meals_db = mongoCRUD('MealPlanner','Meals') # collection
 
 #------------- databaseCRUDService Meal Methods -------------#
 @app.route('/api/meals/', methods = ['GET', 'POST', 'DELETE'])
-# @cross_origin()
 def AllEntries():
 
     '''All entries in database.'''
@@ -29,7 +28,6 @@ def AllEntries():
     # if flask.request.method == 'OPTIONS':
     #
     #     return preflight_allow_CORS()
-
 
 
     if flask.request.method == "GET":
@@ -60,7 +58,8 @@ def AllEntries():
         Meals_db.create(meal_object)
         print meal_object
 
-        return flask.redirect("http://localhost:3001/database.html", code=201)
+        return ('', 204)
+        # return flask.redirect("http://localhost:3001/database.html", code=201)
 
     if flask.request.method == 'DELETE':
         '''Delete all entries.'''
@@ -68,7 +67,6 @@ def AllEntries():
 
     else:
         return {'flask.request.method':'NOT FOUND'}
-
 
 
 
@@ -93,7 +91,7 @@ def OneEntry(key, value):
         update_dict = json.loads(flask.request.data)
         meal_dict = Meals_db.readByField({key:value})[0]
         Meals_db.updateManyFields({'_id':meal_dict['_id']}, update_dict)
-        return flask.redirect('http://localhost:3001/meal_search.html'), 201
+        # return flask.redirect('http://localhost:3001/meal_search.html'), 201
 
 
     elif flask.request.method == 'DELETE':
@@ -102,7 +100,7 @@ def OneEntry(key, value):
         print "deleted %s" % value
         # flask.jsonify()
         {key+':'+value:Meals_db.deleteByField({key:value})}#)
-        return flask.redirect('http://localhost:3001/database.html'), 201
+        # return flask.redirect('http://localhost:3001/database.html'), 201
 
 
     else:
