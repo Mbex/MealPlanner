@@ -20,7 +20,7 @@ def parse_ingredients(ingredients):
             ingredient_key = " ".join(line[(j+1):]).replace(",","")
             if ingredient_key == "":
                 ingredient_key = " ".join(line[0:j-1]).replace(",","")
-            ingredient_value = line[j-1]
+            ingredient_value = line[j-1].replace(" a ", "")
 
 
         else:

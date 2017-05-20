@@ -1,6 +1,12 @@
 var LOCAL_HOST = 'http://localhost:5000/';
 var FNAME = document.URL.substr(document.URL.lastIndexOf('/')+1);
 
+function capitaliseEachWord(str) {
+    return str.replace(/\w\S*/g, function(txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+}
+
 function GetHeaders(theUrl){
   var req = new XMLHttpRequest();
   req.open('GET', theUrl, false);
@@ -58,12 +64,13 @@ function mealEntryForm(meal) {
 
   label.setAttribute('class', 'field');
   label.setAttribute('for', 'name');
-  label.innerText = 'name';
+  label.innerText = 'Name';
 
   input.setAttribute('type', 'text');
   input.setAttribute('name', 'name');
   try {
-    input.setAttribute('placeholder', meal.name);
+    // input.setAttribute('placeholder', meal.name);
+    input.value = meal.name;
   } catch(e){};
 
   form.appendChild(label);
@@ -105,8 +112,10 @@ function mealEntryForm(meal) {
     textarea.setAttribute('rows', 10);
     textarea.setAttribute('cols', 30);
     try{
-      textarea.value = JSON.stringify(meal[o]);
-    }catch(e) {};
+      for (key in meal[o]){
+        textarea.value += JSON.stringify(meal[o][key]).concat(" ", JSON.stringify(key), "\r\n").replace(/[",]/g,"");
+      }
+    } catch(e) {console.log(e)};
     label.appendChild(textarea);
     form.appendChild(label);
   });

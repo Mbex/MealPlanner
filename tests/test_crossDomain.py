@@ -14,7 +14,5 @@ def preflight_allow_CORS():
 print vars(preflight_allow_CORS().headers)
 
 
-
-
 varriables = vars(preflight_allow_CORS().headers)["_list"]
 self.assertTrue()
