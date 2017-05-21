@@ -70,17 +70,21 @@ div {
 footer {
   clear: both;
   background-color: $color4;
-  display: block;
   ul{
     list-style-type: none;
+    margin: 0px;
+    text-align: center;
     li{
-      padding: 20px;
       a:link{
+        height: 50px;
         font-size: 20px;
         text-decoration: none;
         text-align: center;
         color: $color1;
         display: block;
+      }
+      a:hover{
+        background-color: black;
       }
       a:visited{
         color: $color1;

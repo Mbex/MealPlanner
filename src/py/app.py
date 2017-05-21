@@ -87,8 +87,8 @@ def OneEntry(key, value):
     elif flask.request.method == 'PUT':
         "Update entries."
         update_dict = json.loads(flask.request.data)
-        meal_dict = Meals_db.readByField({key:value})[0]
-        Meals_db.updateManyFields({'_id':meal_dict['_id']}, update_dict)
+        Meals_db.updateManyFields({'_id':update_dict['_id']}, update_dict)
+        return ('', 204)
         # return flask.redirect('http://localhost:3001/meal_search.html'), 201
 
 
@@ -96,7 +96,8 @@ def OneEntry(key, value):
         "Delete entry."
 
         print "deleted %s" % value
-        {key+':'+value:Meals_db.deleteByField({key:value})}#)
+        {key+':'+value:Meals_db.deleteByField({key:value})}
+        return ('', 204)
         # return flask.redirect('http://localhost:3001/database.html'), 201
 
 
