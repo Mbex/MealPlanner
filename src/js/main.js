@@ -24,33 +24,22 @@ function httpGet(theUrl) {
     });
 };
 
-function httpPut(theUrl) {
-    return new Promise( function(resolve, reject) {
+function httpPut(theUrl, update_object) {
         var page = new XMLHttpRequest();
-        page.addEventListener('load', function(evt){
-            resolve(JSON.parse(this.responseText));
-        });
-        page.addEventListener('error', function(error){
-            reject(error);
-        });
         page.open("PUT", theUrl);
-        page.send();
-    });
+        page.send(JSON.stringify(update_object));
 };
 
 function httpDelete(theUrl) {
     var page = new XMLHttpRequest();
     page.open("DELETE", theUrl);
-    // if (page.readyState == 4 && page.status == 200){
     page.send();
-    // }
 };
-
 
 function mealEntryForm(meal) {
 
   var form = document.createElement('form');
-  form.setAttribute('action', "http://localhost:5000/api/meals/");
+  form.setAttribute('action', "http://localhost:5000/meals/");
   form.setAttribute('class', 'meal-edit-form');
 
   var label = document.createElement('label');
@@ -59,12 +48,11 @@ function mealEntryForm(meal) {
   label.setAttribute('class', 'field');
   label.setAttribute('for', 'name');
   label.innerText = 'name';
-
   input.setAttribute('type', 'text');
   input.setAttribute('name', 'name');
   try {
-    input.setAttribute('placeholder', meal.name);
-  } catch(e){};
+    input.value =  meal.name;
+  } catch (e) {};
 
   form.appendChild(label);
   form.appendChild(input);
@@ -105,22 +93,23 @@ function mealEntryForm(meal) {
     textarea.setAttribute('rows', 10);
     textarea.setAttribute('cols', 30);
     try{
-      textarea.value = JSON.stringify(meal[o]);
-    }catch(e) {};
-    label.appendChild(textarea);
+      for (key in meal[o]){
+        textarea.value += JSON.stringify(meal[o][key]).concat(" ", JSON.stringify(key), "\r\n").replace(/[",]/g,"");
+      }
+    } catch(e) {};
     form.appendChild(label);
+    form.appendChild(textarea);
   });
 
   return form;
 
 };
 
-
 function populateMealDBList() {
 
   // populate database list of meals with functionality
 
-  httpGet(LOCAL_HOST.concat('api/meals/')).then( function (all_meals) {
+  httpGet(LOCAL_HOST.concat('meals/')).then( function (all_meals) {
 
     if (all_meals.length < 1){
 
@@ -132,20 +121,32 @@ function populateMealDBList() {
 
       all_meals.forEach( function(meal) {
 
-        var meal_addr = LOCAL_HOST.concat('api/meals/_id/<value>').replace('<value>', meal._id);
+        var meal_addr = LOCAL_HOST.concat('meals/_id/<value>/').replace('<value>', meal._id);
         var entry_parent = document.createElement('div');
         var entry_major = document.createElement("p");
         var entry_minor = document.createElement("p");
         var entry_del_button = document.createElement('button');
         var edit_open = 0;
         var meal_entry_form = mealEntryForm(meal);
-        var submit = document.createElement('input');
+        var update_button = document.createElement('button');
 
-        submit.setAttribute('type','Submit');
-        submit.setAttribute('value','Submit');
-        submit.addEventListener('click', function(evt){
-          console.log("post");
-          // httpPut(meal_addr, update);
+        update_button.setAttribute('type','button');
+        update_button.innerText = "Update";
+        update_button.addEventListener('click', function(evt){
+            var update_object = {};
+            update_object._id = meal._id;
+            var obj_elements = entry_parent.childNodes[0].childNodes;
+            var key = "";
+            var value = "";
+            obj_elements.forEach(function(el){
+                if (el.nodeName == "LABEL"){
+                    key = el.getAttribute("FOR");
+                } else if (el.nodeName == "INPUT" | el.nodeName == "SELECT" | el.nodeName == "TEXTAREA"){
+                    value = el.value;
+                }
+              update_object[key] = value;
+            });
+            httpPut(meal_addr, update_object);
         });
 
         entry_parent.setAttribute('id', meal._id);
@@ -157,16 +158,15 @@ function populateMealDBList() {
           }
         });
 
-        meal_entry_form.appendChild(submit);
+        meal_entry_form.appendChild(update_button);
         entry_parent.appendChild(meal_entry_form);
         entry_parent.appendChild(entry_del_button);
         dsp_meals.appendChild(entry_parent);
 
       });
-    }
+    };
   });
 };
-
 
 function POSTMealEntryForm() {
 

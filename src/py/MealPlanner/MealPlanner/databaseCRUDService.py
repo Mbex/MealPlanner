@@ -116,7 +116,8 @@ class mongoCRUD(object):
         """Update many fields in single entry in database."""
 
         query_object = self._strIdToObjectId(query_object)
-        print query_object, update_object
+        del update_object["_id"]
+
         return self.collection.update(
                 query_object , {'$set' : update_object}
                )
