@@ -117,7 +117,7 @@ class mongoCRUD(object):
 
         query_object = self._strIdToObjectId(query_object)
         del update_object["_id"]
-        
+
         return self.collection.update(
                 query_object , {'$set' : update_object}
                )

@@ -16,48 +16,34 @@ import json
 app = flask.Flask(__name__)
 cors = CORS(app)
 Meals_db = mongoCRUD('MealPlanner','Meals') # collection
-
 #------------- databaseCRUDService Meal Methods -------------#
-@app.route('/api/meals/', methods = ['GET', 'POST', 'DELETE'])
+@app.route('/meals/', methods = ['GET','POST','OPTIONS','DELETE'])
 def AllEntries():
 
     '''All entries in database.'''
 
-    # if flask.request.method == 'OPTIONS':
-    #
-    #     return preflight_allow_CORS()
+    if flask.request.method == 'OPTIONS':
+        '''Allow cross origin response.'''
+        return preflight_allow_CORS()
 
 
     if flask.request.method == "GET":
-
-        #List entries based on keyword passed.
-        ans = str(Meals_db.readAll()).replace("'",'"')
-        print ans
-        return ans
+        '''Show all entries in database.'''
+        return (str(Meals_db.readAll()).replace("'",'"'), 202)
 
 
     if flask.request.method == 'POST':
-
         '''Create new entry.'''
 
         name = flask.request.form['name']
         meal_type = flask.request.form['meal type']
         ingredients = flask.request.form['ingredients'].split("\r\n")
-
-		# parse ingredients correctly
         meal_ingredients = parse_ingredients(ingredients)
-
-        # Make meal object
         meal_object = Meal(name, meal_type, **meal_ingredients)
-
         if flask.request.form['method']:
              meal_object.Method(flask.request.form['method'])
-
         Meals_db.create(meal_object)
-        print meal_object
-
-        return ('', 204)
-        # return flask.redirect("http://localhost:3001/database.html", code=201)
+        return flask.redirect("http://localhost:3000/meal_search.html")
 
     if flask.request.method == 'DELETE':
         '''Delete all entries.'''
@@ -68,41 +54,41 @@ def AllEntries():
 
 
 
-@app.route('/api/meals/<key>/<value>', methods = ['GET','PUT', 'OPTIONS', 'DELETE'])
+@app.route('/meals/<key>/<value>/', methods = ['GET','PUT','DELETE','OPTIONS'])
 @cross_origin()
 def OneEntry(key, value):
 
     '''Entries that match kv pair in database.'''
 
     if flask.request.method == 'OPTIONS':
-
+        '''Allow cross origin response.'''
         return preflight_allow_CORS()
 
 
     elif flask.request.method == 'GET':
-        "List entries."
+        '''List entry.'''
         return flask.jsonify({key+':'+value:Meals_db.readByField({key:value})})
 
 
     elif flask.request.method == 'PUT':
-        "Update entries."
+        '''Update entry.'''
+
         update_dict = json.loads(flask.request.data)
+        update_dict['ingredients'] = parse_ingredients(update_dict['ingredients'].split("\n"))
+
         Meals_db.updateManyFields({'_id':update_dict['_id']}, update_dict)
-        return ('', 204)
-        # return flask.redirect('http://localhost:3001/meal_search.html'), 201
+        return 'Success', 200, {'Content-Type': 'text/plain'}
 
 
     elif flask.request.method == 'DELETE':
-        "Delete entry."
+        '''Delete entry.'''
 
-        print "deleted %s" % value
-        {key+':'+value:Meals_db.deleteByField({key:value})}
-        return ('', 204)
-        # return flask.redirect('http://localhost:3001/database.html'), 201
+        {key+':'+value : Meals_db.deleteByField({key : value})}
+        return 'Success', 200, {'Content-Type': 'text/plain'}
 
 
     else:
-        return {'flask.request.method':'NOT FOUND'}
+        return 500
 
 
 
@@ -131,50 +117,50 @@ def OneEntry(key, value):
 
 
 
-
-
-
-MealPlans_db = mongoCRUD('MealPlanner','MealPlans')
-
-
-#------------- MealPlan Methods -------------#
-
-@app.route('/meals/_id/<_id>/', methods = ['POST','DELETE'])
-def addMealToMealList(_id):
-
-    '''Add a meal_object to mealplan_db.meals.'''
-
-    if flask.request.method == "POST":
-
-        meal_object = mealplan_db.readByField({'_id':_id})
-        MealPlans_db.addMeal(meal_object)
-        return flask.jsonify({'meal added:': meal_object})
-
-    elif flask.request.method == "DELETE":
-
-        '''Remove a meal_object from mealplan_db.meals.'''
-
-        meal_object = mealplan_db.readByField({'_id':_id})
-        MealPlans_db.removeMeal(meal_object)
-        return flask.jsonify({'meal removed:': meal_object})
-
-    else:
-        return {'error':'oops'}
-
-
-
-@app.route('/meals/random/<n>', methods = ['GET'])
-def nRandomMeals(n):
-
-    '''N random meals from database.'''
-    return flask.jsonify({str(n)+' random meal(s):': MealPlans_db.randomMeals(int(n))})
-
-
-@app.route('/meals/random', methods = ['GET'])
-def fiveRandomMeals():
-
-    '''Default 5 random meals from database.'''
-    return flask.jsonify({'5 random meals:': MealPlans_db.randomMeals(5)})
+#
+#
+#
+# MealPlans_db = mongoCRUD('MealPlanner','MealPlans')
+#
+#
+# #------------- MealPlan Methods -------------#
+#
+# @app.route('/mealplan/_id/<_id>/', methods = ['POST','DELETE'])
+# def addMealToMealList(_id):
+#
+#     '''Add a meal_object to mealplan_db.meals.'''
+#
+#     if flask.request.method == "POST":
+#
+#         meal_object = mealplan_db.readByField({'_id':_id})
+#         MealPlans_db.addMeal(meal_object)
+#         return flask.jsonify({'meal added:': meal_object})
+#
+#     elif flask.request.method == "DELETE":
+#
+#         '''Remove a meal_object from mealplan_db.meals.'''
+#
+#         meal_object = mealplan_db.readByField({'_id':_id})
+#         MealPlans_db.removeMeal(meal_object)
+#         return flask.jsonify({'meal removed:': meal_object})
+#
+#     else:
+#         return {'error':'oops'}
+#
+#
+#
+# @app.route('/mealplan/random/<n>', methods = ['GET'])
+# def nRandomMeals(n):
+#
+#     '''N random meals from database.'''
+#     return flask.jsonify({str(n)+' random meal(s):': MealPlans_db.randomMeals(int(n))})
+#
+#
+# @app.route('/mealplan/random', methods = ['GET'])
+# def fiveRandomMeals():
+#
+#     '''Default 5 random meals from database.'''
+#     return flask.jsonify({'5 random meals:': MealPlans_db.randomMeals(5)})
 
 
 
