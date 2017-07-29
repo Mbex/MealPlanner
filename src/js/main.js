@@ -181,32 +181,16 @@ function POSTMealEntryForm() {
 
 };
 
-function PostRandomForm() {
+function RandomMealGenerator(n) {
 
-  var form = document.createElement('form');
-  var label = document.createElement('label');
-  var input = document.createElement('input');
-  var submit = document.createElement('button');
-  var generator_div = document.getElementById("generator");
+  return new Promise( function(resolve, reject) {
 
-  form.setAttribute('class', 'mealplan-form');
-  submit.setAttribute('type','button');
-  submit.innerText= 'Go!';
-  submit.addEventListener('click', function (evt) {
+    httpGet(LOCAL_HOST.concat('meals/random?n=<n>').replace('<n>', n)).then( function (randomResults) {
 
-    httpGet(LOCAL_HOST.concat('meals/random?n=<n>').replace('<n>', input.value)).then( function (randomResults) {
-
-      try {
-        document.getElementById('results_parent').innerHTML = "";
-      } catch(e){
-        console.log(e);
-      };
-
-      var results_parent_div = document.getElementById('results_parent');
       var results_div = document.createElement('div');
       results_div.setAttribute('id', "results");
 
-      randomResults[input.value.concat(' random meal(s)')].forEach( function (element){
+      randomResults[n.concat(' random meal(s)')].forEach( function (element){
 
          var result_div = document.createElement('div')
          var meal_name = document.createElement('h4');
@@ -222,23 +206,12 @@ function PostRandomForm() {
            result_div.appendChild(ingredient_div);
          };
 
-         var swap_button = document.createElement('button');
-         swap_button.setAttribute('type','button');
-         swap_button.innerText= 'swap';
-         swap_button.addEventListener('click', function (evt) {
-           httpGet(LOCAL_HOST.concat('meals/random?n=1')).then( function (randomResult) {
-          //  var parent = this.parentNode;
-           console.log(randomResult);//['1 random meals(s)']);
-           });
-         });
-         result_div.append(swap_button);
-
          var remove_button = document.createElement('button');
          remove_button.setAttribute('type','button');
          remove_button.innerText= 'remove';
          result_div.append(remove_button);
          remove_button.addEventListener('click', function (evt) {
-          this.parentNode.innerHTML = '';
+           this.parentNode.remove();
          });
 
          results_div.appendChild(result_div);
@@ -247,22 +220,58 @@ function PostRandomForm() {
       var add_button = document.createElement('button');
       add_button.setAttribute('type','button');
       add_button.innerText= 'add';
-      results_div.append(add_button);
+      add_button.addEventListener('click', function (evt) {
+        this.remove(add_button);
+        RandomMealGenerator("1").then( function(results_div) {
+          var results_parent_div = document.getElementById('results_parent');
+          results_parent_div.appendChild(results_div);
+        });
+      });
+      results_div.appendChild(add_button);
 
-      results_parent_div.appendChild(results_div);
+      resolve(results_div);
 
     });
   });
+}
 
-  label.setAttribute('class', 'field');
-  label.setAttribute('for', 'name');
-  label.innerText = 'Number of Meals';
+
+function PostMealPlanGeneratorForm() {
+
+  var form = document.createElement('form');
+  var label = document.createElement('label');
+  var input = document.createElement('input');
+  var submit = document.createElement('button');
+  var generator_div = document.getElementById("generator");
 
   input.setAttribute('type', 'text');
   input.setAttribute('name', 'n');
 
+  label.setAttribute('class', 'field');
+  label.setAttribute('for', 'name');
+  label.innerText = 'Number of Meals';
   label.appendChild(input);
+
   form.appendChild(label);
+  form.setAttribute('class', 'mealplan-form');
+
+  submit.setAttribute('type','button');
+  submit.innerText= 'Go!';
+  submit.addEventListener('click', function (evt) {
+
+    try { // delete parent element if its already been initialised
+      document.getElementById('results_parent').innerHTML = "";
+    } catch(e){
+      console.log(e);
+    };
+
+    // puts random meals into divs and appends to DOM
+    RandomMealGenerator(input.value).then( function(results_div) {
+      var results_parent_div = document.getElementById('results_parent');
+      results_parent_div.appendChild(results_div);
+    });
+  });
+
   form.appendChild(submit);
   generator_div.append(form);
 
@@ -282,7 +291,7 @@ if (FNAME == 'meal_search.html'){
 
 } else if (FNAME == 'meal_plan.html'){
 
-  PostRandomForm();
+  PostMealPlanGeneratorForm();
 
 
 }
