@@ -181,6 +181,93 @@ function POSTMealEntryForm() {
 
 };
 
+function PostRandomForm() {
+
+  var form = document.createElement('form');
+  var label = document.createElement('label');
+  var input = document.createElement('input');
+  var submit = document.createElement('button');
+  var generator_div = document.getElementById("generator");
+
+  form.setAttribute('class', 'mealplan-form');
+  submit.setAttribute('type','button');
+  submit.innerText= 'Go!';
+  submit.addEventListener('click', function (evt) {
+
+    httpGet(LOCAL_HOST.concat('meals/random?n=<n>').replace('<n>', input.value)).then( function (randomResults) {
+
+      try {
+        document.getElementById('results_parent').innerHTML = "";
+      } catch(e){
+        console.log(e);
+      };
+
+      var results_parent_div = document.getElementById('results_parent');
+      var results_div = document.createElement('div');
+      results_div.setAttribute('id', "results");
+
+      randomResults[input.value.concat(' random meal(s)')].forEach( function (element){
+
+         var result_div = document.createElement('div')
+         var meal_name = document.createElement('h4');
+         meal_name.innerText = element.name;
+         result_div.appendChild(meal_name);
+
+         ingredient_div = document.createElement('div')
+         kv_pair = element.ingredients;
+         for (key in kv_pair){
+           var kv_line = document.createElement('p');
+           kv_line.innerText = key.concat(", ").concat(kv_pair[key]);
+           ingredient_div.appendChild(kv_line);
+           result_div.appendChild(ingredient_div);
+         };
+
+         var swap_button = document.createElement('button');
+         swap_button.setAttribute('type','button');
+         swap_button.innerText= 'swap';
+         swap_button.addEventListener('click', function (evt) {
+           httpGet(LOCAL_HOST.concat('meals/random?n=1')).then( function (randomResult) {
+          //  var parent = this.parentNode;
+           console.log(randomResult);//['1 random meals(s)']);
+           });
+         });
+         result_div.append(swap_button);
+
+         var remove_button = document.createElement('button');
+         remove_button.setAttribute('type','button');
+         remove_button.innerText= 'remove';
+         result_div.append(remove_button);
+         remove_button.addEventListener('click', function (evt) {
+          this.parentNode.innerHTML = '';
+         });
+
+         results_div.appendChild(result_div);
+      });
+
+      var add_button = document.createElement('button');
+      add_button.setAttribute('type','button');
+      add_button.innerText= 'add';
+      results_div.append(add_button);
+
+      results_parent_div.appendChild(results_div);
+
+    });
+  });
+
+  label.setAttribute('class', 'field');
+  label.setAttribute('for', 'name');
+  label.innerText = 'Number of Meals';
+
+  input.setAttribute('type', 'text');
+  input.setAttribute('name', 'n');
+
+  label.appendChild(input);
+  form.appendChild(label);
+  form.appendChild(submit);
+  generator_div.append(form);
+
+};
+
 
 
 
@@ -192,5 +279,10 @@ if (FNAME == 'meal_search.html'){
 } else if (FNAME == 'meal_entry_form.html') {
 
   POSTMealEntryForm();
+
+} else if (FNAME == 'meal_plan.html'){
+
+  PostRandomForm();
+
 
 }
