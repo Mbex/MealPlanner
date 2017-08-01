@@ -11,12 +11,12 @@ class MealPlan(mongoCRUD):
     def __init__ (self, database_name, collection_name):
 
         mongoCRUD.__init__(self, database_name, collection_name)
-        self.meals = []
-        self.shopping_list = {}
+        # self.meals = []
+        # self.shopping_list = {}
 
 
     # def Add(self, obj):
-    # 
+    #
     #     """Add meal from database to mealPlan object."""
     #     self.meals.append(obj['_id'])
     #
@@ -27,10 +27,11 @@ class MealPlan(mongoCRUD):
     #     self.meals.remove(obj['_id'])
 
 
-    def Save(self):
+    def Save(self, name, array_of_ids):
 
         """Save ids of meals as entry in database."""
-        self.create_MealPlan(self.meals)
+        # self.meals = array_of_ids
+        self.create_MealPlan(name, array_of_ids)
 
     # def shoppingList(self):
     #

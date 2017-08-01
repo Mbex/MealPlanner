@@ -77,13 +77,14 @@ class mongoCRUD(object):
         return result
 
 
-    def create_MealPlan(self, list_of_meal_ids):
+    def create_MealPlan(self, name, list_of_meal_ids):
 
         """Put meal plan id list in collection."""
 
-        content = {'meal_ids' : list_of_meal_ids}
-        content['_id'] = ObjectId()
-        content['created'] = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        content = {"name":name}
+        content["meal_ids"] = list_of_meal_ids
+        content["_id"] = ObjectId()
+        content["created"] = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print content
 
         result = self.collection.insert_one(content)
