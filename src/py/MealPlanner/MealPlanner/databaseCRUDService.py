@@ -1,7 +1,8 @@
 from MealPlanner.unicodeConvertor import convert
-from datetime import datetime
 from bson.objectid import ObjectId
 from pymongo import MongoClient
+import random
+import datetime as dt
 import json
 import re
 import os
@@ -63,15 +64,32 @@ class mongoCRUD(object):
 
     def create(self, meal_object):
 
-        """Put meal_object in collection in database."""
+        """Put meal_object in collection."""
 
         content = vars(meal_object)
         content['_id'] = ObjectId()
+        content['created'] = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print content
-        result = self.collection.insert_one(content)
 
+        result = self.collection.insert_one(content)
         print ("created id: %s meal_object: %s" %
                             (content['_id'], meal_object.name))
+        return result
+
+
+    def create_MealPlan(self, name, list_of_meal_ids):
+
+        """Put meal plan id list in collection."""
+
+        content = {"name":name}
+        content["meal_ids"] = list_of_meal_ids
+        content["_id"] = ObjectId()
+        content["created"] = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print content
+
+        result = self.collection.insert_one(content)
+        print "created id: %s MealPlan" % content['_id']
+
         return result
 
 
@@ -86,11 +104,10 @@ class mongoCRUD(object):
 
         return results
 
+
     def readByField(self, query_object):
 
-        """Gets all documents in a collection
-        that match query_object.
-        """
+        """Gets all documents in a collection that match query_object."""
 
         results = []
         query_object = self._strIdToObjectId(query_object)
@@ -113,8 +130,7 @@ class mongoCRUD(object):
 
     def updateManyFields(self, query_object, update_object):
 
-        """Update many fields in single entry in database."""
-
+        """Update many fields in single entry in collection."""
         query_object = self._strIdToObjectId(query_object)
         del update_object["_id"]
 
@@ -125,15 +141,26 @@ class mongoCRUD(object):
 
     def deleteAll(self):
 
-	"""Remove all entries in Database."""
-
-	return self.collection.remove({})
+        """Remove all entries in collection."""
+        return self.collection.remove({})
 
 
     def deleteByField(self, query_object):
 
-        """Delete meal_object in database."""
-
+        """Delete entry in collection."""
         query_object = self._strIdToObjectId(query_object)
 
         return self.collection.remove(query_object)
+
+
+    def randomMeals(self, n):
+
+        """Get n random selections of meals from collection."""
+        allEntries = self.readAll()
+        len_allEntries = len(allEntries)
+        if n > len_allEntries:
+            n = len_allEntries
+        randList = random.sample(range(0, len(allEntries)), n)
+        meals = [allEntries[i] for i in randList]
+
+        return meals

@@ -8,62 +8,31 @@ class MealPlan(mongoCRUD):
     """
 
 
-    def __init__ (self, database_name):
-        mongoCRUD.__init__(self, database_name)
+    def __init__ (self, database_name, collection_name):
 
-        self.meals = []
-        self.shopping_list = {}
-
-
-    def addMeal(self, meal_object):
-
-        """Add meal from database to mealPlan object."""
-
-        #meal_object = self.readByField(query_object)
-        self.meals.append(meal_object[0])
+        mongoCRUD.__init__(self, database_name, collection_name)
+        # self.meals = []
+        # self.shopping_list = {}
 
 
-    def removeMeal(self, meal_object):
+    # def Add(self, obj):
+    #
+    #     """Add meal from database to mealPlan object."""
+    #     self.meals.append(obj['_id'])
+    #
+    #
+    # def Remove(self, obj):
+    #
+    #     """Remove meal from mealPlan object."""
+    #     self.meals.remove(obj['_id'])
 
-        """Remove meal from mealPlan object."""
 
-        # for i, entry in enumerate(self.meals):
-        #     if query_object[query_object.keys()[0]] in str(entry):
-        #         self.meals.pop(i)
-
-        self.meals.append(meal_object[0])
-
-
-    def saveMeals(self):
+    def Save(self, name, array_of_ids):
 
         """Save ids of meals as entry in database."""
+        # self.meals = array_of_ids
+        self.create_MealPlan(name, array_of_ids)
 
-        
-
-
-    def randomMeals(self, n):
-
-        """Get n random n selections of meals
-        from database containing .json files.
-        """
-
-        allEntries = self.readAll()
-        randList = random.sample(range(0, len(allEntries)), n)
-
-        meals = [allEntries[i] for i in randList]
-
-        return meals
-
-
-    # def _parseStringAmount(self, string):
-    #
-    #     """Returns list of int of amount and unit of amount."""
-    #
-    #     split = string.split()
-    #     return [int(split[0]), split[1]]
-    #
-    #
-    #
     # def shoppingList(self):
     #
     #     """Return dictionary of meals with ingredients as keys"""

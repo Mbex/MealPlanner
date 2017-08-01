@@ -1,6 +1,7 @@
 var LOCAL_HOST = 'http://localhost:5000/';
 var FNAME = document.URL.substr(document.URL.lastIndexOf('/')+1);
 
+
 function GetHeaders(theUrl){
   var req = new XMLHttpRequest();
   req.open('GET', theUrl, false);
@@ -30,11 +31,19 @@ function httpPut(theUrl, update_object) {
         page.send(JSON.stringify(update_object));
 };
 
+function httpPost(theUrl, object) {
+        var page = new XMLHttpRequest();
+        page.open("POST", theUrl);
+        page.send(JSON.stringify(object));
+};
+
 function httpDelete(theUrl) {
     var page = new XMLHttpRequest();
     page.open("DELETE", theUrl);
     page.send();
 };
+
+
 
 function mealEntryForm(meal) {
 
@@ -111,11 +120,14 @@ function populateMealDBList() {
 
   httpGet(LOCAL_HOST.concat('meals/')).then( function (all_meals) {
 
+   console.log(all_meals);
+
     if (all_meals.length < 1){
 
       console.log("no meals in database!");
 
     } else {
+
 
       var dsp_meals = document.getElementById('db-meal-list');
 
@@ -183,14 +195,197 @@ function POSTMealEntryForm() {
 
 
 
+function RandomMealGenerator(name, n) {
+
+    var results_div = document.getElementById('results');
+    if (results_div == null) {
+      var results_div = document.createElement('div');
+      results_div.setAttribute('id', "results");
+    };
+
+  return new Promise( function(resolve, reject) {
+
+    httpGet(LOCAL_HOST.concat('meals/random?n=<n>').replace('<n>', n)).then( function (randomResults) {
+
+      randomResults.result.forEach( function (element){
+
+         var result_div = document.createElement('div')
+         var meal_name = document.createElement('h4');
+         var ingredient_div = document.createElement('div')
+
+         result_div.setAttribute("class","result_div");
+         result_div.setAttribute("id",element._id);
+         meal_name.innerText = element.name;
+         result_div.appendChild(meal_name);
+
+         kv_pair = element.ingredients;
+         for (key in kv_pair){
+           var kv_line = document.createElement('p');
+           kv_line.innerText = key.concat(", ").concat(kv_pair[key]);
+           ingredient_div.appendChild(kv_line);
+           result_div.appendChild(ingredient_div);
+         };
+
+         var remove_button = document.createElement('button');
+         remove_button.setAttribute('type','button');
+         remove_button.innerText= 'remove';
+         result_div.append(remove_button);
+         remove_button.addEventListener('click', function (evt) {
+           this.parentNode.remove();
+         });
+
+         results_div.appendChild(result_div);
+      });
+
+      var save_button = document.createElement('button');
+      save_button.setAttribute('type','button');
+      save_button.setAttribute('id','save_button');
+      save_button.innerText= 'save';
+      save_button.addEventListener('click', function (evt) {
+        var ids = []; // put meal ids of mealplan into array
+        var elements = document.getElementsByClassName("result_div");
+        for (var i=0, len=elements.length; i<len; i++) {
+           ids.push(elements[i].getAttribute("id"));
+        };
+        console.log(name)
+        httpPost("http://localhost:5000/mealplan/",{"name" : name, "ids" : ids});
+      });
+
+      var add_button = document.createElement('button');
+      add_button.setAttribute('type','button');
+      add_button.innerText= 'add';
+      add_button.addEventListener('click', function (evt) {
+        this.remove();
+        document.getElementById("save_button").remove();
+        RandomMealGenerator("","1").then( function(results_div) {
+          var results_parent_div = document.getElementById('results_parent');
+          results_parent_div.appendChild(results_div);
+        });
+      });
+      results_div.appendChild(add_button);
+      results_div.appendChild(save_button);
+      resolve(results_div);
+    });
+  });
+}
+
+function MealPlanGeneratorForm() {
+
+  var form = document.createElement('form');
+  var label = document.createElement('label');
+  var input = document.createElement('input');
+  var label2 = document.createElement('label');
+  var input2 = document.createElement('input');
+  var submit = document.createElement('button');
+  var generator_div = document.getElementById("generator");
+
+  input.setAttribute('type', 'text');
+  input.setAttribute('name', 'name');
+  label.setAttribute('class', 'field');
+  label.setAttribute('for', 'name');
+  label.innerText = 'Name';
+
+  input2.setAttribute('type', 'text');
+  input2.setAttribute('name', 'n');
+  label2.setAttribute('class', 'field');
+  label2.setAttribute('for', 'n');
+  label2.innerText = 'Number of Meals';
+
+  label.appendChild(input);
+  label2.appendChild(input2);
+  form.appendChild(label);
+  form.appendChild(label2);
+  form.setAttribute('class', 'mealplan-form');
+
+  submit.setAttribute('type','button');
+  submit.innerText= 'Go!';
+  submit.addEventListener('click', function (evt) {
+    try { // delete parent element if its already been initialised
+      document.getElementById('results_parent').innerHTML = "";
+    } catch(e){
+      console.log(e);
+    };
+
+    // puts random meals into divs and appends to DOM
+    console.log(input.value, input2.value)
+    RandomMealGenerator(input.value, input2.value).then( function(results_div) {
+      var results_parent_div = document.getElementById('results_parent');
+      results_parent_div.appendChild(results_div);
+    });
+  });
+
+  form.appendChild(submit);
+  generator_div.append(form);
+
+};
+
+function populateMealplanDBList() {
+
+  // populate database list of mealplans with functionality
+
+  httpGet(LOCAL_HOST.concat('mealplan/')).then( function (all_mealplans) {
+
+    if (all_mealplans.length < 1){
+      console.log("no meals in database!");
+    } else {
+
+      var dsp_meals = document.getElementById('db-mealplan-list');
+      all_mealplans.forEach( function(meal_plan) {
+
+        console.log(meal_plan);
+
+        var meal_addr = LOCAL_HOST.concat('mealplan/_id/<value>/').replace('<value>', meal_plan._id);
+        var entry_parent = document.createElement('div');
+        var entry_major = document.createElement("h4");
+        var entry_del_button = document.createElement('button');
+        var edit_open = 0;
+        entry_major.innerText = meal_plan.name;
+        entry_parent.appendChild(entry_major);
+
+        meal_plan.meal_ids.forEach( function(id) {
+          var meal_addr = LOCAL_HOST.concat('meals/_id/<value>/').replace('<value>', id);
+          var entry_minor = document.createElement("p");
+          entry_parent.appendChild(entry_minor);
+
+          httpGet(meal_addr).then(function (meal) {
+            entry_minor.innerText = meal._id[0].name;
+          });
+        });
+
+        entry_parent.setAttribute('id', meal_plan._id);
+        entry_del_button.innerHTML = 'Delete';
+        entry_del_button.addEventListener('click', function(evt) {
+          if (confirm("Are you sure you want to permenantly remove this mealplan?")) {
+            httpDelete(meal_addr);
+            entry_parent.parentNode.removeChild(entry_parent);
+          };
+        });
+
+        entry_parent.appendChild(entry_del_button);
+        dsp_meals.appendChild(entry_parent);
+
+      });
+    };
+  });
+};
+
+
 
 // main
-if (FNAME == 'meal_search.html'){
+if (FNAME == 'new_meal.html') {
+
+  POSTMealEntryForm();
+
+} else if (FNAME == 'meal_database.html'){
 
   populateMealDBList();
 
-} else if (FNAME == 'meal_entry_form.html') {
+} else if (FNAME == 'new_mealplan.html'){
 
-  POSTMealEntryForm();
+  MealPlanGeneratorForm();
+
+} else if (FNAME == 'mealplan_database.html'){
+
+  populateMealplanDBList();
 
 }
