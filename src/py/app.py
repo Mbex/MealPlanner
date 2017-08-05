@@ -1,9 +1,9 @@
 from MealPlanner.databaseCRUDService import mongoCRUD
-from MealPlanner.crossDomain import preflight_allow_CORS
 from MealPlanner.parseIngredients import parse_ingredients
+from MealPlanner.shoppingList import *
+from MealPlanner.crossDomain import preflight_allow_CORS
 from MealPlanner.MealPlan import MealPlan
 from MealPlanner.Meal import Meal
-from MealPlanner.shoppingList import *
 from flask_cors import CORS, cross_origin
 import socket
 import flask
@@ -89,6 +89,7 @@ def OneEntry(key, value):
 def nRandomMeals():
 
     '''N random meals from database.'''
+
     n = flask.request.args.get('n')
     print {"result" : Meals_db.randomMeals(int(n))}
     return flask.jsonify({"result" : Meals_db.randomMeals(int(n))})
@@ -155,8 +156,7 @@ def ShoppingList(mealplan_id):
         for k, v in d.iteritems():
             shopping_list.setdefault(k, []).append(v)
 
-    # for each ingredient in the shopping list.
-    # discern type and consolidate list.
+    # for each ingredient in the shopping list, discern type and consolidate list.
     for k, v in shopping_list.iteritems():
         items = [discern_type(item) for item in v]
         shopping_list[k] = consolidate_list(items)

@@ -1,7 +1,7 @@
 import re
 
 def discern_type(item):
-    """Return correct type for item."""
+    """Return correct type for item - either int, str, or tupe of int and str."""
     try:
         item = int(item)
     except:

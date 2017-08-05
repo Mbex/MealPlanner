@@ -330,29 +330,31 @@ function populateMealplanDBList() {
     } else {
 
       var dsp_meals = document.getElementById('db-mealplan-list');
-      all_mealplans.forEach( function(meal_plan) {
 
-        console.log(meal_plan);
+      all_mealplans.forEach( function(meal_plan) {
 
         var meal_addr = LOCAL_HOST.concat('mealplan/_id/<value>/').replace('<value>', meal_plan._id);
         var entry_parent = document.createElement('div');
-        var entry_major = document.createElement("h4");
+        var entry_major = document.createElement("h2");
         var entry_del_button = document.createElement('button');
+        var ShL_button = document.createElement('button');
         var edit_open = 0;
-        entry_major.innerText = meal_plan.name;
+        var meal_plan_name = meal_plan.name;
+
+        ShL_button.innerText = 'Shopping List';
+        entry_major.innerText = meal_plan_name; // THIS isnt always working
         entry_parent.appendChild(entry_major);
 
         meal_plan.meal_ids.forEach( function(id) {
           var meal_addr = LOCAL_HOST.concat('meals/_id/<value>/').replace('<value>', id);
           var entry_minor = document.createElement("p");
+          entry_parent.setAttribute('id', meal_plan._id);
           entry_parent.appendChild(entry_minor);
-
           httpGet(meal_addr).then(function (meal) {
             entry_minor.innerText = meal._id[0].name;
           });
         });
 
-        entry_parent.setAttribute('id', meal_plan._id);
         entry_del_button.innerHTML = 'Delete';
         entry_del_button.addEventListener('click', function(evt) {
           if (confirm("Are you sure you want to permenantly remove this mealplan?")) {
@@ -361,9 +363,47 @@ function populateMealplanDBList() {
           };
         });
 
+        var list_div = document.createElement('div');
+        list_div.setAttribute('id','list_div_'.concat(meal_plan._id));
+        list_div.innerHTML = '<h3>Shopping List</h3>'
+
+        httpGet(LOCAL_HOST.concat('shoppinglist/<mealplan_id>').replace('<mealplan_id>', meal_plan._id)).then( function (results) {
+          for (key in results){
+            var list_key_h4 = document.createElement("h4");
+
+            list_key_h4.innerText = key;
+            list_div.appendChild(list_key_h4);
+            console.log(key);
+
+            for (i in results[key]){
+              if (results[key][i] > 0) {
+
+                var list_val_p = document.createElement("p");
+                list_val_p.innerText = results[key][i];
+                list_div.append(list_val_p);
+                console.log(list_val_p.innerText);
+
+              } else if (results[key][i].constructor === Object) {
+
+                for (k in results[key][i]){
+
+                  var list_val_p = document.createElement("p");
+                  list_val_p.innerText = (results[key][i][k]).toString().concat(k);
+                  console.log(list_val_p.innerText);
+                  list_div.append(list_val_p);
+
+                };
+
+              } else {
+                // PASS
+              };
+            };
+          };
+        });
+        entry_parent.appendChild(list_div);
+        entry_parent.appendChild(ShL_button);
         entry_parent.appendChild(entry_del_button);
         dsp_meals.appendChild(entry_parent);
-
       });
     };
   });
