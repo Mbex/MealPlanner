@@ -1,3 +1,5 @@
+#!/home/mikbok/anaconda/bin/python
+
 import collections
 from bson.objectid import ObjectId
 

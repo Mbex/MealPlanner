@@ -1,3 +1,4 @@
+#!/home/mikbok/anaconda/bin/python
 import flask
 
 def preflight_allow_CORS():

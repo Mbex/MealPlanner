@@ -5,30 +5,26 @@ body, header, nav, footer, aside, section, h1, h2, h3, h4, h5, h6, p, div, img, 
 }
 
 // global variables
-$color1: white;
-$color2: rgba(20,40,600,0.8);
-$color3: rgba(80,0,60,1);
-$color4: rgba(80,80,80,1);
+$color1: #ead8ab; // Creme
+$color2: #c46c44; // Orange
+$color3: #1e3226; // Dark Green
+$color4: #a19f80; // Light Grey
+$color5: #7a9179; // Medium Grey
 
 
 body{
   font-family: helvetica;
   font-stretch: expanded;
+  background-color: $color1;
+  text-decoration-color: $color3;
 }
 
 header{
   position: relative;
   text-align: center;
-  font-size: 36;
+  font-size: 18pt;
   padding: 2%;
-}
-
-h1{
-  position: relative;
-  text-align: center;
-  font-size: 36;
-  padding: 2%;
-
+  margin-bottom: 35%;
 }
 
 nav{
@@ -47,11 +43,11 @@ nav{
     text-align: center;
     display: block;
     color: black;
-    background-color: $color2;
+    background-color: $color4;
     padding: 5%;
   }
   a.main-nav:hover{
-    background-color: $color3;
+    background-color: $color5;
   }
   a.main-nav:visited{
     color: black;
@@ -64,40 +60,43 @@ fieldset{
 }
 
 div {
-  padding-bottom: 100px;
+  padding-bottom: 10px;
 }
+
 
 footer {
   clear: both;
-  background-color: $color4;
+  background-color: $color3;
+  margin-top: 20%;
+
   ul{
     list-style-type: none;
     margin: 0px;
     text-align: center;
     li{
       a:link{
-        height: 50px;
-        font-size: 20px;
+        padding: 5%;
+        font-size: 30px;
         text-decoration: none;
-        text-align: center;
-        color: $color1;
+        // text-align: center;
+        // color: $color5;
         display: block;
       }
       a:hover{
-        background-color: black;
+        background-color: $color2;
+        color: $color3;
       }
       a:visited{
-        color: $color1;
       }
     }
   }
 }
-
-
-/********
-Class rules
-**********/
-
+//
+//
+// /********
+// Class rules
+// **********/
+//
 .wrapper{
   width:100%; /* container now always occupies x% of browser window */
   min-width:250px; /* of the div */
@@ -105,26 +104,42 @@ Class rules
   margin:auto; /* computes (window size - width) /2 and pads each side */
   // padding:10px;
 }
-.clearer{
+
+.clearer {
   clear: both;
 }
 
-.fieldset-form{
-    max-width: 20%;
-}
 
-/*********
-ID rules
-*********/
-//
-// #add-meal-form{
-//   width:45%;
-//   // float : left;
-//
+// div.hide-me {
+//   display: none;
 // }
 //
-//
-// #db-meal-list{
-//   width: 45%;
-//   // float: left;
+// fieldset.db-mealplan-list h2 h3 {
+//   color: transparent;
+//   cursor: pointer;
+//   text-shadow: 0 0 0 #000;
 // }
+//
+// h3:focus + div.hide-me {
+//   display: block;
+// }
+//
+// h2:focus + div.hide-me {
+//   display: block;
+// }
+
+// /*********
+// ID rules
+// *********/
+// //
+// // #add-meal-form{
+// //   width:45%;
+// //   // float : left;
+// //
+// // }
+// //
+// //
+// // #db-meal-list{
+// //   width: 45%;
+// //   // float: left;
+// // }

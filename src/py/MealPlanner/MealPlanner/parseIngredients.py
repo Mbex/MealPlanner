@@ -1,3 +1,4 @@
+#!/home/mikbok/anaconda/bin/python
 
 def parse_ingredients(ingredients):
 
@@ -21,7 +22,6 @@ def parse_ingredients(ingredients):
             if ingredient_key == "":
                 ingredient_key = " ".join(line[0:j-1]).replace(",","")
             ingredient_value = line[j-1].replace(" a ", "")
-
 
         else:
             # otherwise, use ',' as the marker
@@ -47,8 +47,3 @@ def parse_ingredients(ingredients):
     meal_ingredients.pop('', None)
 
     return meal_ingredients
-
-
-
-# print parse_ingredients(
-# ("5\r\nappricots\r\n5 bannanas\r\nclementines 5\r\nbunch of dates\r\nelderflower bunch of\r\n5 forest fruits\r\nginormous grapes 5\r\nbunch of heavy horseradish\r\nignomineous itsu bunch of\r\njackfruit, 5\r\nkizu, 5 of\r\nlemons, 2kg\r\n").split("\r\n"))

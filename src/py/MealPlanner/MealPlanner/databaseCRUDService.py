@@ -1,3 +1,4 @@
+#!/home/mikbok/anaconda/bin/python
 from MealPlanner.unicodeConvertor import convert
 from bson.objectid import ObjectId
 from pymongo import MongoClient
