@@ -13,7 +13,8 @@ var browserSync = require('browser-sync').create();
 var history = require('connect-history-api-fallback');
 var connect = require('connect');
 var jquery = require('jquery');
-var shell = require('gulp-shell')
+var shell = require('gulp-shell');
+var cron = require('node-cron');
 var app = connect()
   .use(history())
   .listen(5002);

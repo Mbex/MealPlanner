@@ -134,6 +134,8 @@ function populateMealDBList() {
       all_meals.forEach( function(meal) {
 
         var meal_addr = LOCAL_HOST.concat('meals/_id/<value>/').replace('<value>', meal._id);
+        var entry_title = document.createElement('h2');
+
         var entry_parent = document.createElement('div');
         var entry_major = document.createElement("p");
         var entry_minor = document.createElement("p");
@@ -161,7 +163,12 @@ function populateMealDBList() {
             httpPut(meal_addr, update_object);
         });
 
+        entry_title.innerText = meal.name;
+        entry_title.setAttribute('tabindex', "1");
+
         entry_parent.setAttribute('id', meal._id);
+        entry_parent.setAttribute('class', "hide");
+
         entry_del_button.innerHTML = 'Delete';
         entry_del_button.addEventListener('click', function(evt) {
           if (confirm("Are you sure you want to permenantly remove this meal?")) {
@@ -170,10 +177,11 @@ function populateMealDBList() {
           }
         });
 
-        meal_entry_form.appendChild(update_button);
-        entry_parent.appendChild(meal_entry_form);
-        entry_parent.appendChild(entry_del_button);
+        dsp_meals.appendChild(entry_title);
         dsp_meals.appendChild(entry_parent);
+        entry_parent.appendChild(entry_del_button);
+        entry_parent.appendChild(meal_entry_form);
+        meal_entry_form.appendChild(update_button);
 
       });
     };
@@ -307,7 +315,6 @@ function MealPlanGeneratorForm() {
     };
 
     // puts random meals into divs and appends to DOM
-    console.log(input.value, input2.value)
     RandomMealGenerator(input.value, input2.value).then( function(results_div) {
       var results_parent_div = document.getElementById('results_parent');
       results_parent_div.appendChild(results_div);
@@ -334,16 +341,14 @@ function populateMealplanDBList() {
       all_mealplans.forEach( function(meal_plan) {
 
         var meal_addr = LOCAL_HOST.concat('mealplan/_id/<value>/').replace('<value>', meal_plan._id);
+        var entry_title = document.createElement("h2");
         var entry_parent = document.createElement('div');
-        var entry_major = document.createElement("h2");
+        var entry_major = document.createElement("p");
         var entry_del_button = document.createElement('button');
-        var ShL_button = document.createElement('button');
         var edit_open = 0;
         var meal_plan_name = meal_plan.name;
-
-        ShL_button.innerText = 'Shopping List';
-        entry_major.innerText = meal_plan_name; // THIS isnt always working
-        entry_parent.appendChild(entry_major);
+        entry_title.setAttribute('class','hide-me')
+        // entry_parent.setAttribute('tabindex', "1")
 
         meal_plan.meal_ids.forEach( function(id) {
           var meal_addr = LOCAL_HOST.concat('meals/_id/<value>/').replace('<value>', id);
@@ -364,16 +369,18 @@ function populateMealplanDBList() {
         });
 
         var list_div = document.createElement('div');
-        list_div.setAttribute('id','list_div_'.concat(meal_plan._id));
-        list_div.innerHTML = '<h3>Shopping List</h3>'
+        list_div.setAttribute('class','hide-me');
+        // entry_parent.setAttribute('tabindex', "1")
+
+        var shopping_list_h3 = document.createElement('h3');
+        shopping_list_h3.innerText = "Shopping List";
 
         httpGet(LOCAL_HOST.concat('shoppinglist/<mealplan_id>').replace('<mealplan_id>', meal_plan._id)).then( function (results) {
           for (key in results){
-            var list_key_h4 = document.createElement("h4");
+            var list_key_p = document.createElement("p");
 
-            list_key_h4.innerText = key;
-            list_div.appendChild(list_key_h4);
-            console.log(key);
+            list_key_p.innerText = key;
+            list_div.appendChild(list_key_p);
 
             for (i in results[key]){
               if (results[key][i] > 0) {
@@ -381,7 +388,6 @@ function populateMealplanDBList() {
                 var list_val_p = document.createElement("p");
                 list_val_p.innerText = results[key][i];
                 list_div.append(list_val_p);
-                console.log(list_val_p.innerText);
 
               } else if (results[key][i].constructor === Object) {
 
@@ -389,7 +395,6 @@ function populateMealplanDBList() {
 
                   var list_val_p = document.createElement("p");
                   list_val_p.innerText = (results[key][i][k]).toString().concat(k);
-                  console.log(list_val_p.innerText);
                   list_div.append(list_val_p);
 
                 };
@@ -400,10 +405,14 @@ function populateMealplanDBList() {
             };
           };
         });
+
+        entry_parent.appendChild(shopping_list_h3);
         entry_parent.appendChild(list_div);
-        entry_parent.appendChild(ShL_button);
         entry_parent.appendChild(entry_del_button);
         dsp_meals.appendChild(entry_parent);
+        entry_title.innerText = meal_plan_name; // THIS isnt always working
+        dsp_meals.appendChild(entry_title);
+
       });
     };
   });

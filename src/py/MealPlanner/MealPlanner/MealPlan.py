@@ -1,3 +1,4 @@
+#!/home/mikbok/anaconda/bin/python
 from MealPlanner.databaseCRUDService import mongoCRUD
 import random
 import flask

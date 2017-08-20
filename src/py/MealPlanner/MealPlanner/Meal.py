@@ -1,3 +1,4 @@
+#!/home/mikbok/anaconda/bin/python
 from MealPlanner.unicodeConvertor import convert
 
 class Meal(object):

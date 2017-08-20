@@ -1,3 +1,5 @@
+#!/home/mikbok/anaconda/bin/python
+
 from MealPlanner.databaseCRUDService import mongoCRUD
 from MealPlanner.parseIngredients import parse_ingredients
 from MealPlanner.shoppingList import *

@@ -1,3 +1,5 @@
+#!/home/mikbok/anaconda/bin/python
+
 import re
 
 def discern_type(item):

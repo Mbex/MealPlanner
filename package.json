@@ -5,13 +5,14 @@
   "author": "mike priestley <michael.priestley@manchester.ac.uk>",
   "main": "app.py",
   "scripts": {
-    "start": "python src/py/app.py & gulp serve"
+    "start": "python ./src/py/app.py & gulp serve"
   },
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^3.3.7",
     "jquery": "^3.1.0",
     "moment": "^2.14.1",
+    "node-cron": "^1.2.1",
     "request": "^2.74.0"
   },
   "private": true,
